@@ -60,8 +60,8 @@ export class Game {
   // ------------------------------------------------ townsfolk
   buildNPCs() { const w = this.world; this.npcs = NPCS.map((d) => { const L = d.look; let rig, kind = 'dog', markY = 1.4;
       if (L.rat) { rig = makeRat(L.rat, L.hat || 'none', { pack: false, extras: L.extras || [], noBlaster: true }); rig.root.scale.setScalar(1.35); kind = 'rat'; markY = 1.6; }
-      else if (L.martina) { rig = makeMartina(); kind = 'martina'; rig.root.scale.multiplyScalar(1.15); markY = 2.3; }
-      else if (L.kitten) { rig = makeKitten(); kind = 'kitten'; rig.root.scale.setScalar(1.4); markY = 1.3; }
+      else if (L.martina) { rig = makeMartina(); kind = 'martina'; rig.root.scale.multiplyScalar(0.27); markY = 1.0; /* desert tortoise: knee-high to the 2.1 m visitor */ }
+      else if (L.kitten) { rig = makeKitten(); kind = 'kitten'; rig.root.scale.setScalar(0.8); markY = 0.9; }
       else { rig = makePup(L.b, { hat: L.hat, hatC: L.hatC, neck: L.neck, neckC: L.neckC, glasses: L.glasses, tint: L.tint, seed: d.id.length * 13 + d.id.charCodeAt(0) }); rig.root.scale.setScalar(L.s || 1); markY = (1.15 + (L.b === 'greatdane' ? 0.5 : 0)) * (L.s || 1); }
       const g = w.ground(d.at[0], d.at[1], 20, 0.1).y; const y = d.y != null ? d.y + (d.y < 1 && d.region !== 'out' ? 0.12 : 0) : (g > -50 ? g : 0);
       const n = { d, id: d.id, rig, kind, x: d.at[0], y, z: d.at[1], yaw: d.at[2], x0: d.at[0], z0: d.at[1], y0: y, yaw0: d.at[2], region: d.region, wp: 0, markY };
@@ -284,7 +284,7 @@ export class Game {
       for (const k of [0, -1, 1]) { o2.set(c.tgt.x + sx * k, c.tgt.y, c.tgt.z + sz * k); dr = Math.min(dr, this.world.ray(o2, dv, c.dist + 0.5, big)); }
       let d = dr; if (R0) { const m = 0.45, lo = [R0.x0 + m, R0.y0, R0.z0 + m], hi = [R0.x1 - m, R0.ceil - 0.35, R0.z1 - m], O = [c.tgt.x, c.tgt.y, c.tgt.z], Dd = [dv.x, dv.y, dv.z]; let db = 1e9;
         for (let i = 0; i < 3; i++) { if (Math.abs(Dd[i]) < 1e-6) continue; const t = ((Dd[i] > 0 ? hi[i] : lo[i]) - O[i]) / Dd[i]; if (t >= 0) db = Math.min(db, t + 0.45); }
-        d = nearDoor && dr > db + 0.8 ? dr : Math.min(dr, db); }
+        d = Math.min(dr, db); }
       return Math.max(1.4, Math.min(c.dist, d - 0.45)); };
     const base = c.pitch + (R0 && !this.chat ? 0.12 : 0); const dBase = this.chat ? c.dist : distAt(base);
     const bT = this.chat ? 0 : Math.max(0, Math.min(R0 ? 0.6 : 0.3, (1 - dBase / c.dist) * (R0 ? 1.0 : 0.5)));
