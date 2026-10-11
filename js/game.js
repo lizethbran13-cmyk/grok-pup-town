@@ -277,31 +277,35 @@ export class Game {
     if (IN.camDX || IN.camDY) { c.yaw -= IN.camDX * 0.0085 * sens * (S.opts.invertX ? -1 : 1); c.pitch = Math.max(-0.1, Math.min(1.15, c.pitch + IN.camDY * 0.005 * sens)); IN.camDX = IN.camDY = 0; }
     const manual = performance.now() - IN.lastCam < 1500;
     if (!manual && me.speed > 1) { let d = me.yaw - c.yaw; while (d > PI) d -= PI * 2; while (d < -PI) d += PI * 2; if (Math.abs(d) < 2.2) c.yaw += d * Math.min(1, dt * 0.9 * (me.speed / 7)); }
-    const indoor = this.region !== 'out'; const want = this.chat ? 6.2 : indoor ? 8.6 : 10.8; c.dist += (want - c.dist) * Math.min(1, dt * 2);
+    const indoor = this.region !== 'out'; const want = this.chat ? 6.2 : indoor ? (this.region.startsWith('r_') ? 6.6 : 8.6) : 10.8; c.dist += (want - c.dist) * Math.min(1, dt * 2);
     const cn = this.chat && this.chat.npc; let tx = me.x, tz = me.z, ty = me.y + me.hgt * 0.8;
     if (cn) { const a = Math.atan2(me.x - cn.x, me.z - cn.z); let dy = a + 1.15 + PI - c.yaw; while (dy > PI) dy -= PI * 2; while (dy < -PI) dy += PI * 2; c.yaw += dy * Math.min(1, dt * 3); c.pitch += (0.32 - c.pitch) * Math.min(1, dt * 3); tx = me.x * 0.45 + cn.x * 0.55; tz = me.z * 0.45 + cn.z * 0.55; ty = Math.max(ty - 0.35, cn.y + (cn.markY || 1.2) * 0.7); }
     const k6 = c.snap ? 1 : 1 - Math.exp(-dt * 6); c.tgt.set(c.tgt.x + (tx - c.tgt.x) * (cn || c.chatT > 0 ? k6 : 1), c.snap ? ty : c.tgt.y + (ty - c.tgt.y) * (1 - Math.exp(-dt * (me.onGround ? 6 : 3))), c.tgt.z + (tz - c.tgt.z) * (cn || c.chatT > 0 ? k6 : 1)); c.chatT = cn ? 0.8 : Math.max(0, (c.chatT || 0) - dt);
     // camera distance along a pitch: walls/props stop it smoothly; indoors it also stays inside the room box, except it may slip out through the doorway
-    const R0 = REGIONS.find((q) => q.id === this.region), drp = R0 && DOORS[R0.id], nearDoor = drp && Math.hypot(me.x - drp[0], me.z - drp[1]) < 4.5;
+    const R0 = REGIONS.find((q) => q.id === this.region), drp = R0 && DOORS[R0.id], nearDoor = drp && Math.hypot(me.x - drp[0], me.z - drp[1]) < (R0.id.startsWith('r_') ? 2.2 : 4.5);
     const big = (q) => q.cam !== false && !q.off && !q.nocam && !q.floor && !q.glass && !q.dyn && (q.max[1] - q.min[1]) > (R0 ? 0.9 : 1.2) && Math.max(q.max[0] - q.min[0], q.max[2] - q.min[2]) > (R0 ? 0.9 : (q.max[1] - q.min[1]) > 2.5 ? 0.6 : 1.6); // tall posts/pillars count too (lamp posts stay see-through)
     const o2 = this._co || (this._co = new THREE.Vector3()), dv = this._cdv || (this._cdv = new THREE.Vector3());
-    const distAt = (pit) => { dv.set(-Math.sin(c.yaw) * Math.cos(pit), Math.sin(pit), -Math.cos(c.yaw) * Math.cos(pit)); const sx = Math.cos(c.yaw) * 0.32, sz = -Math.sin(c.yaw) * 0.32; let dr = c.dist + 0.5;
+    const RR = R0 && R0.id.startsWith('r_') && !this.chat; // Ratita Row rooms: over-the-shoulder framing (low, pulled back, looking into the room; may back out through the doorway)
+    const distAt = (pit, yw = c.yaw) => { dv.set(-Math.sin(yw) * Math.cos(pit), Math.sin(pit), -Math.cos(yw) * Math.cos(pit)); const sx = Math.cos(yw) * 0.32, sz = -Math.sin(yw) * 0.32; let dr = c.dist + 0.5;
       for (const k of [0, -1, 1]) { o2.set(c.tgt.x + sx * k, c.tgt.y, c.tgt.z + sz * k); dr = Math.min(dr, this.world.ray(o2, dv, c.dist + 0.5, big)); }
-      let d = dr; if (R0) { const m = 0.45, lo = [R0.x0 + m, R0.y0, R0.z0 + m], hi = [R0.x1 - m, R0.ceil - 0.35, R0.z1 - m], O = [c.tgt.x, c.tgt.y, c.tgt.z], Dd = [dv.x, dv.y, dv.z]; let db = 1e9;
+      let d = dr; if (R0 && !(RR && nearDoor && dv.x * (drp[0] - c.tgt.x) + dv.z * (drp[1] - c.tgt.z) > 0)) { const m = 0.45, lo = [R0.x0 + m, R0.y0, R0.z0 + m], hi = [R0.x1 - m, R0.ceil - 0.35, R0.z1 - m], O = [c.tgt.x, c.tgt.y, c.tgt.z], Dd = [dv.x, dv.y, dv.z]; let db = 1e9;
         for (let i = 0; i < 3; i++) { if (Math.abs(Dd[i]) < 1e-6) continue; const t = ((Dd[i] > 0 ? hi[i] : lo[i]) - O[i]) / Dd[i]; if (t >= 0) db = Math.min(db, t + 0.45); }
         d = Math.min(dr, db); }
-      return Math.max(R0 ? 0.8 : 1.4, Math.min(c.dist, d - 0.45)); }; // indoors it may come close (never out through a wall)
-    const base = c.pitch + (R0 && !this.chat ? 0.12 : 0); const dBase = this.chat ? c.dist : distAt(base);
-    const bT = this.chat ? 0 : Math.max(0, Math.min(R0 ? 0.78 : 0.3, (1 - dBase / c.dist) * (R0 ? 1.1 : 0.5)));
+      return Math.max(RR ? 1.5 : R0 ? 0.8 : 1.4, Math.min(c.dist, d - 0.45)); }; // indoors it may come close (never out through a wall)
+    const base = RR ? Math.max(0.12, Math.min(0.62, 0.3 + (c.pitch - 0.42) * 0.7)) : c.pitch + (R0 && !this.chat ? 0.12 : 0);
+    if (RR && !manual && (c.snap || me.speed < 0.8)) { const d0 = distAt(base); if (d0 < 1.9) { let bo = 0, bs = d0; for (const o of [0.45, -0.45, 0.9, -0.9, 1.4, -1.4]) { const sc = distAt(base, c.yaw + o) - Math.abs(o) * 1.2; if (sc > bs + 0.6) { bs = sc; bo = o; } } if (bo) c.yaw += c.snap ? bo : bo * Math.min(1, dt * 1.6); } } // backed against a wall: swing round to see the room
+    const dBase = this.chat ? c.dist : distAt(base);
+    const bT = this.chat ? 0 : Math.max(0, Math.min(RR ? 0.16 : R0 ? 0.78 : 0.3, (1 - dBase / c.dist) * (RR ? 0.35 : R0 ? 1.1 : 0.5)));
     c.boost = (c.boost || 0) + (bT - (c.boost || 0)) * Math.min(1, dt * (bT > (c.boost || 0) ? 2.5 : 1.2));
-    const pp = Math.min(1.2, base + c.boost); const d = distAt(pp); const dir = new THREE.Vector3().copy(dv);
+    const pp = Math.min(RR ? 0.72 : 1.2, base + c.boost); const d = distAt(pp); const dir = new THREE.Vector3().copy(dv);
     if (c.cd == null || c.snap) c.cd = d; else if (d < c.cd - 0.05) c.cd += (d - c.cd) * Math.min(1, dt * 9); else if (d > c.cd + 0.35) c.cd += (d - c.cd) * Math.min(1, dt * 2.2);
     const w3 = c.tgt.clone().addScaledVector(dir, c.cd); const gy = this.world.ground(w3.x, w3.z, w3.y + 0.5, 0.3).y; const minY = (gy > -1e8 ? gy : me.y) + 0.6; if (w3.y < minY) w3.y = minY;
+    if (RR) { const sh = Math.max(0, Math.min(0.75, (4.8 - c.cd) * 0.3)); c.sh = (c.sh || 0) + (sh - (c.sh || 0)) * Math.min(1, dt * 4); w3.x -= Math.cos(c.yaw) * c.sh; w3.z += Math.sin(c.yaw) * c.sh; } else c.sh = 0; // close to a wall: slide over the shoulder so the hero never fills the screen
     if (c.snap) { c.pos.copy(w3); c.snap = false; } else { const kx = 1 - Math.exp(-dt * 14), ky = 1 - Math.exp(-dt * 8); c.pos.x += (w3.x - c.pos.x) * kx; c.pos.z += (w3.z - c.pos.z) * kx; c.pos.y += (w3.y - c.pos.y) * ky; }
-    if (R0 && c.tgt.x > R0.x0 + 0.3 && c.tgt.x < R0.x1 - 0.3 && c.tgt.z > R0.z0 + 0.3 && c.tgt.z < R0.z1 - 0.3) { const m = 0.3; c.pos.x = Math.max(R0.x0 + m, Math.min(R0.x1 - m, c.pos.x)); c.pos.z = Math.max(R0.z0 + m, Math.min(R0.z1 - m, c.pos.z)); c.pos.y = Math.min(R0.ceil - 0.2, c.pos.y); } // indoors the lens never leaves the room, even mid-glide
+    if (R0 && !(RR && nearDoor) && c.tgt.x > R0.x0 + 0.3 && c.tgt.x < R0.x1 - 0.3 && c.tgt.z > R0.z0 + 0.3 && c.tgt.z < R0.z1 - 0.3) { const m = 0.3; c.pos.x = Math.max(R0.x0 + m, Math.min(R0.x1 - m, c.pos.x)); c.pos.z = Math.max(R0.z0 + m, Math.min(R0.z1 - m, c.pos.z)); c.pos.y = Math.min(R0.ceil - 0.2, c.pos.y); } // indoors the lens never leaves the room, even mid-glide
     if (this.busS && this.bus) { const b = this.busS, m = 0.9, inB = c.pos.x > b.min[0] - m && c.pos.x < b.max[0] + m && c.pos.z > b.min[2] - m && c.pos.z < b.max[2] + m && c.pos.y < b.max[1] + m; this.bus.root.visible = !inB; } // never fill the screen with the inside of a passing Dog-Bus
     cam.position.copy(c.pos); if (c.shake > 0) { c.shake -= dt; cam.position.x += (Math.random() - 0.5) * c.shake; cam.position.y += (Math.random() - 0.5) * c.shake; }
-    cam.lookAt(c.tgt.x, c.tgt.y + 0.2, c.tgt.z); const fov = E.baseFov + (R0 && !this.chat ? (E.baseFov > 65 ? 10 : 8) : 0); /* small rooms: a slightly wider lens instead of a cramped close-up */ if (Math.abs(cam.fov - fov) > 0.1) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 3); cam.updateProjectionMatrix(); } }
+    cam.lookAt(c.tgt.x - Math.cos(c.yaw) * (c.sh || 0) * 0.25, c.tgt.y + (RR ? 0.35 : 0.2), c.tgt.z + Math.sin(c.yaw) * (c.sh || 0) * 0.25); const fov = E.baseFov + (R0 && !this.chat ? (E.baseFov > 65 ? 10 : 8) : 0); /* small rooms: a slightly wider lens instead of a cramped close-up */ if (Math.abs(cam.fov - fov) > 0.1) { cam.fov += (fov - cam.fov) * Math.min(1, dt * 3); cam.updateProjectionMatrix(); } }
   // ------------------------------------------------ co-op
   addRemote(pid, info, slot) { if (this.players.has(pid)) return this.players.get(pid); const p = new Player({ rat: 'human', look: info.look, outfit: info.outfit, name: info.name, pid, slot }); p.addTo(this.scene); p.place(this.world.start); this.players.set(pid, p); this.hud.dirty = true; return p; }
   removeRemote(pid) { const p = this.players.get(pid); if (!p || p.local) return; p.removeFrom(this.scene); this.players.delete(pid); this.hud.dirty = true; }

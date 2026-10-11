@@ -46,7 +46,7 @@ export function rowStep() { const r = R(), q = r.q | 0, n = ROW_CLUES.filter((c)
   if (q === 0) return 'Luna needs help! Visit the Ratita Branch Office.'; if (q === 1) return `Find out who took the Pup-Translator (${n}/4 clues)`;
   if (q === 2) return 'Sweepy is zooming round the Test Track! Catch it!'; if (q === 3) return 'Bring the Pup-Translator back to Luna for the Grand Opening!'; return 'Grand Opening done! Play, shop and find Golden Gears.'; }
 // ---------------------------------------------------------------- Ratita Row folks (rats + dogs). at: [x, z, yaw]
-const N = (id, n, look, at, region, o = {}) => Object.assign({ id, n, look, at, region, row: true }, o);
+const N = (id, n, look, at, region, o = {}) => Object.assign({ id, n, look, at, region, row: true }, region.startsWith('r_') ? { y: 0 } : {}, o); // indoor staff stand on the floor (a ground probe from above would land them on the roof)
 export const ROW_NPCS = [
   N('rluna', 'Luna (Ratita CEO)', { rat: 'luna', hat: 'crown' }, [63, 33.2, PI], 'r_office'),
   N('tilly', 'Tilly (Receptionist)', { rat: 'cream', hat: 'flower' }, [57.4, 35.6, PI / 2], 'r_office'),
@@ -64,8 +64,12 @@ export const ROW_NPCS = [
   N('bolt', 'Bolt (Apprentice Beagle)', { b: 'beagle', hat: 'cap', hatC: 0xff8a3d }, [75.6, 64.4, PI], 'r_work', { mode: 'sit' }),
   N('pawsley', 'Professor Pawsley (Curator)', { b: 'basset', glasses: true, neck: 'bowtie', neckC: 0x7c3aed }, [91.5, 56.4, PI], 'r_museum'),
   N('pip', 'Pip (Museum Pup)', { b: 'pupcorgi', hat: 'beanie', hatC: 0xa66bff }, [95.4, 63.2, -PI / 2], 'r_museum', { mode: 'sit' }),
-  N('dot', 'Dot (Track Marshal)', { b: 'dalmatian', hat: 'helmet', hatC: 0xff4fa0 }, [72.6, 18.4, 0], 'row'),
-  N('ranger', 'Ranger Ruff (Range Officer)', { b: 'collie', hat: 'cap', hatC: 0x22c55e, neck: 'vest', neckC: 0x22c55e }, [80.4, 13.6, PI], 'row'),
+  N('pepper', 'Pepper (Visitor)', { b: 'dachshund', hat: 'beanie', hatC: 0xff4fa0 }, [70.6, 34.6, -PI / 2], 'r_office', { mode: 'sit' }),
+  N('mochi', 'Mochi (Shopper)', { b: 'pomeranian', neck: 'bow', neckC: 0xff4fa0 }, [85.2, 35.6, PI], 'r_store'),
+  N('duke', 'Duke (Museum Visitor)', { b: 'greatdane', glasses: true, neck: 'scarf', neckC: 0x22d3ee }, [88.6, 61.4, PI / 2], 'r_museum'),
+  N('tula', 'Tula (Junior Explorer)', { b: 'golden', hat: 'cap', hatC: 0xffd23f }, [94.4, 57.0, -PI / 2], 'r_museum', { walk: [[94.4, 57.0], [94.4, 62.6]] }),
+  N('dot', 'Dot (Track Marshal)', { b: 'dalmatian', hat: 'helmet', hatC: 0xff4fa0 }, [72.6, 18.4, 0], 'row', { y: 0 }),
+  N('ranger', 'Ranger Ruff (Range Officer)', { b: 'collie', hat: 'cap', hatC: 0x22c55e, neck: 'vest', neckC: 0x22c55e }, [77.6, 10.2, -PI / 2], 'row', { y: 0 }),
   N('zippy', 'Zippy (Delivery Pup)', { b: 'chihuahua', hat: 'cap', hatC: 0xff4fa0, neck: 'vest', neckC: 0xff4fa0 }, [56, 50.8, PI / 2], 'row', { walk: [[56, 50.8], [96, 50.8], [96, 42.2], [56, 42.2]] }),
   N('gizmo', 'Gizmo (Intern Rat)', { rat: 'brownie', hat: 'party' }, [71.4, 48.6, PI / 2], 'row'),
 ];
@@ -89,6 +93,10 @@ export function rowTalk(id, G) {
       if (q === 1 && !r.clues.lab) ln.push([null, 'The stand is right there in the middle of the lab. Take a good look at the floor around it!']); return { lines: ln }; }
     case 'nova': return { lines: L(cyc(['I\'m Nova! I test gadgets by chewing them. Scientifically.', 'The goo vats glow brighter when you hum. Try it!', 'My dream is to invent a ball that throws ITSELF.'])) };
     case 'sprocket': return { lines: L(cyc(['Welcome to the Ratita Gadget Store! Everything costs Cheese Coins, the official money of science.', 'Win coins in the mini-games: the Test Track, the Zapper Range, the Cafe and the Workshop. Golden Gears pay 5 each!', 'The Jet-Pup Pack is our best seller. The Propeller Cap is our best spinner.']), 'Use the counter to browse. Wear hats here or in the Style Station!') };
+    case 'pepper': return { lines: L(cyc(['I came for the Grand Opening! And the cake. Mostly the cake.', 'These sofas are SO soft. I might live here now.', 'Did you know Luna answers every letter herself? I wrote her one about cheese.'])) };
+    case 'mochi': return { lines: L(cyc(['Ooh, Propeller Cap or Cheese Crown? I can\'t decide! Both is an answer, right?', 'I\'m saving my Cheese Coins. Golden Gears give you coins too, did you know?', 'Sprocket says the Bubble Shield is "very bouncy". I like bouncy.'])) };
+    case 'duke': return { lines: L(cyc(['Magnificent! Simply magnificent! The rocket alone is worth the trip.', 'I read every plaque. Twice. The Cheese Cannon story makes me laugh every time.', 'Museums are best enjoyed slowly. And with a snack.'])) };
+    case 'tula': return { lines: L(cyc(['I\'m doing a museum report for school! I\'ve already got 3 pages!', 'When I grow up I\'m going to be an inventor like Pi-rat. But with less cheese on the ceiling.', 'Have you seen the Time Jumper model? It looks like a portal! Whoa!'])) };
     case 'zap': return { lines: L(cyc(['I\'m saving up for the Turbo Sneakers! Then I\'ll be the fastest corgi in history. Corgi-story.', 'Have you seen the Jet-Pup Pack? It goes WHOOSH. I go "wow".', 'I come here every day. To look. Just looking. Okay I bought a keychain.'])) };
     case 'brie': { const ln = L(cyc(['Bonjour! Welcome to the Gouda Byte Cafe! Fresh cheese-a-ccinos and science smoothies.', 'Every drink is made with Ratita tech. The blender has a turbo button. Do NOT press the turbo button.', 'Torty loves our sun-lamp corner. She orders lettuce. Every time. I respect it.']));
       if (q >= 1 && !r.clues.cafe) ln.push([null, 'Oh! Someone swept my WHOLE floor this morning. Spotless! And I found this card under table three. Take a look!']);
