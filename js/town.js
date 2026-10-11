@@ -47,8 +47,8 @@ export function gable(w, x0, z0, x1, z1, y, col, wallCol, o = {}) { const alongX
 function winSlots(from, to, door, width = 2.0, step = 4) { const out = []; const n = Math.max(1, Math.floor((to - from - 2) / step)); for (let i = 0; i < n; i++) { const c = from + (to - from) * (i + 0.5) / n; if (door && c + width / 2 > door[0] - 0.9 && c - width / 2 < door[1] + 0.9) continue; out.push([c - width / 2, c + width / 2]); } return out; }
 // a building: exterior walls (shell), interior lining (its region), floor, ceiling + lamps, windows with flower boxes, door
 // frame, awning, 3D sign, step and welcome mat. B.door = { side: 's'|'n'|'e'|'w', a, b, h }
-export function building(w, B) { const { x0, z0, x1, z1 } = B, ceil = B.ceil, eh = ceil + 0.4, reg = B.id; const winTop = B.winTop || 3.2, winBot = B.winBot || 1.1;
-  w.region = 'shell';
+export function building(w, B) { const { x0, z0, x1, z1 } = B, ceil = B.ceil, eh = ceil + 0.4, reg = B.id; const winTop = B.winTop || 3.2, winBot = B.winBot || 1.1; const SH = B.shell || 'shell';
+  w.region = SH;
   floor(w, x0 + 0.2, z0 + 0.2, x1 - 0.2, z1 - 0.2, B.floor[0], FL, B.floor[1], B.floor[2], B.floor[3]);
   ceiling(w, x0, z0, x1, z1, ceil, B.ceilCol || 0xfffaf2, { li: B.li || 24, lightCol: B.lightCol || 0xfff1dc, lamps: B.lamps !== false });
   const sides = { s: ['x', z1, x0, x1, 1], n: ['x', z0, x0, x1, -1], w: ['z', x0, z0, z1, -1], e: ['z', x1, z0, z1, 1] };
@@ -56,17 +56,17 @@ export function building(w, B) { const { x0, z0, x1, z1 } = B, ceil = B.ceil, eh
     const holes = []; if (door) holes.push(D(door[0], door[1], B.door.h || 3.2)); extra.forEach((d) => holes.push(D(d.a, d.b, d.h || 3.0)));
     const wins = (B.noWin || '').includes(sd) ? [] : winSlots(a, b, door || (extra[0] ? [extra[0].a, extra[0].b] : null), B.winW || 2.0, B.winStep || 4); wins.forEach(([p, q]) => holes.push(G(p, q, winTop, winBot)));
     const ext = ax === 'x' ? [a - 0.25, b + 0.25] : [a, b];
-    w.region = 'shell'; wall(w, ax, at, ext[0], ext[1], eh, B.ext, holes, { frame: B.frame || 0xffffff, trim: B.trim || 0xffffff, base: B.base || shade(B.ext, 0.75) });
+    w.region = SH; wall(w, ax, at, ext[0], ext[1], eh, B.ext, holes, { frame: B.frame || 0xffffff, trim: B.trim || 0xffffff, base: B.base || shade(B.ext, 0.75) });
     w.region = reg; const li = holes.map((h) => [h[0], h[1], h[2], h[3], h[4], 'noframe']); wall(w, ax, at - out * 0.31, a + 0.25, b - 0.25, ceil, B.int, li, { th: 0.12, noTrim: true, base: B.intBase || 0xffffff });
     // flower boxes + shutters under each window (outside), curtains inside
-    wins.forEach(([p, q]) => { const c = (p + q) / 2, Wd = q - p; w.region = 'shell'; const T = ax === 'x' ? w.tf(c, 0, at + out * 0.3, out > 0 ? 0 : PI) : w.tf(at + out * 0.3, 0, c, out > 0 ? PI / 2 : -PI / 2);
+    wins.forEach(([p, q]) => { const c = (p + q) / 2, Wd = q - p; w.region = SH; const T = ax === 'x' ? w.tf(c, 0, at + out * 0.3, out > 0 ? 0 : PI) : w.tf(at + out * 0.3, 0, c, out > 0 ? PI / 2 : -PI / 2);
       if (!B.noBoxes) { T.box('m', B.boxCol || 0x9a6a3e, 0, winBot - 0.32, 0.22, Wd + 0.2, 0.32, 0.42, 0.06); for (let k = 0; k < 7; k++) T.add('g', sph(8), pick([0xff5d8f, 0xffd23f, 0xff8a3d, 0xa66bff, 0xffffff]), -Wd / 2 + 0.1 + k * (Wd - 0.2) / 6, winBot + 0.04, 0.22 + (R() - 0.5) * 0.15, 0, 0, 0, 0.13, 0.11, 0.13);
         for (let k = 0; k < 5; k++) T.add('g', sph(8), 0x3fae5a, -Wd / 2 + 0.25 + k * (Wd - 0.5) / 4, winBot - 0.04, 0.24, 0, 0, 0, 0.16, 0.1, 0.12); }
       if (B.shutters) [-1, 1].forEach((s2) => T.box('m', B.shutters, s2 * (Wd / 2 + 0.36), winBot, 0.06, 0.55, winTop - winBot, 0.08, 0.04));
       w.region = reg; const Ti = ax === 'x' ? w.tf(c, 0, at - out * 0.4, out > 0 ? PI : 0) : w.tf(at - out * 0.4, 0, c, out > 0 ? -PI / 2 : PI / 2);
       if (B.curtain) { [-1, 1].forEach((s2) => Ti.box('f', B.curtain, s2 * (Wd / 2 + 0.05), winBot - 0.2, 0.02, 0.45, winTop - winBot + 0.5, 0.08, 0.04)); Ti.box('x', 0xd4a017, 0, winTop + 0.3, 0.04, Wd + 1.2, 0.06, 0.06, 0.03); } }); }
   // door: frame already from wall(); add step, mat, awning, sign, wall lamps
-  { const d = B.door, [ax, at, , , out] = sides[d.side], c = (d.a + d.b) / 2, Wd = d.b - d.a; w.region = 'shell';
+  { const d = B.door, [ax, at, , , out] = sides[d.side], c = (d.a + d.b) / 2, Wd = d.b - d.a; w.region = SH;
     const T = ax === 'x' ? w.tf(c, 0, at, out > 0 ? 0 : PI) : w.tf(at, 0, c, out > 0 ? PI / 2 : -PI / 2);
     T.box('m', 0xd6d3d1, 0, 0, 0.55, Wd + 1.0, FL, 1.1, 0.04); T.box('f', B.mat || 0xc2410c, 0, FL, 0.95, Wd * 0.75, 0.03, 0.9, 0.03);
     if (B.awning) { const [a1, a2] = B.awning, aw = Wd + 2.4, ah = (d.h || 3.2) + 0.35; for (let i = 0; i < 8; i++) T.add('g', rbox(aw / 8, 0.1, 1.7, 0.03), i % 2 ? a2 : a1, -aw / 2 + aw / 16 + i * aw / 8, ah + 0.35, 1.0, -0.38, 0, 0);
