@@ -21,12 +21,12 @@ export const ROW_BOUNDS = { x0: 49, x1: 102, z0: -3.5, z1: 73 };
 export const inRow = (x, z) => x > 49.4 && x < 102 && z > -3.5 && z < 73;
 // Turbo Test Track: oval centre line (straights z = 3 / 13, bends centred x = 62 / 90, radius 5)
 export const TRACK = { xa: 62, xb: 90, za: 3, zb: 13, r: 5, cz: 8, w: 3.6 };
-export function trackPt(s) { // s in [0,1): starts at the start line (x 76, z 13) heading -x along the north straight
-  const { xa, xb, r, cz } = TRACK, Ls = xb - xa, Lc = PI * r, L = 2 * Ls + 2 * Lc; let d = ((s % 1) + 1) % 1 * L; const half = Ls / 2;
+export function trackPt(s) { // s in [0,1): from the start line (x 76, north straight) heading -x, anticlockwise seen from above. returns [x, z, yaw]
+  const { xa, xb, r, cz } = TRACK, Ls = xb - xa, Lc = PI * r, L = 2 * Ls + 2 * Lc; let d = ((s % 1) + 1) % 1 * L; const half = 76 - xa;
   if (d < half) return [76 - d, cz + r, -PI / 2]; d -= half;
-  if (d < Lc) { const a = PI / 2 + d / r; return [xa + Math.cos(a) * r, cz + Math.sin(a) * r, a + PI / 2 - PI / 2 - PI / 2 + PI]; } d -= Lc;
+  if (d < Lc) { const a = PI / 2 + d / r; return [xa + Math.cos(a) * r, cz + Math.sin(a) * r, -a]; } d -= Lc;
   if (d < Ls) return [xa + d, cz - r, PI / 2]; d -= Ls;
-  if (d < Lc) { const a = -PI / 2 + d / r; return [xb + Math.cos(a) * r, cz + Math.sin(a) * r, 0]; } d -= Lc;
+  if (d < Lc) { const a = -PI / 2 + d / r; return [xb + Math.cos(a) * r, cz + Math.sin(a) * r, -a]; } d -= Lc;
   return [xb - d, cz + r, -PI / 2]; }
 export const TRACK_LEN = 2 * (TRACK.xb - TRACK.xa) + 2 * PI * TRACK.r;
 // ------------------------------------------------------------------------------------------------ build
@@ -71,7 +71,7 @@ function gate(w) { const x = 49, z = 46.5;
   [-1, 1].forEach((s) => w.add('g', sph(10), 0x1b1b24, x + s * 0.48, 7.7, z, 0, 0, 0, 0.09)); w.add('g', sph(10), 0xff8fb1, x, 7.45, z, 0, 0, 0, 0.1); w.add('g', sph(10), 0x1b1b24, x - 0.5, 7.7, z - 0.2, 0, 0, 0, 0.08); w.add('g', sph(10), 0x1b1b24, x + 0.5, 7.7, z + 0.2, 0, 0, 0, 0.0001);
   sign3d(w, 'RATITA ROW', x - 0.25, 6.0, z, -PI / 2, 0.44, 0xffffff, NAVY); sign3d(w, 'RATITA ROW', x + 0.25, 6.0, z, PI / 2, 0.44, 0xffffff, NAVY);
   sign3d(w, 'NOW OPEN', x - 0.3, 4.9, z, -PI / 2, 0.22, CHEESE, null);
-  gearAt(w, x, 9.0, z);
+  gearAt(w, x - 1.6, 1.5, 41.8);
   // planters with flowers either side
   [[-1, 41.8], [1, 51.2]].forEach(([s, pz]) => { w.add('g', rcyl(0.9, 0.6, 0.12, 28), 0xffffff, x - 1.6, 0, pz); w.add('m', rcyl(0.8, 0.05, 0.02, 24), 0x5a3b1e, x - 1.6, 0.58, pz); for (let i = 0; i < 9; i++) { const a = i / 9 * PI * 2; w.add('g', sph(8), pick([PINK, CHEESE, TEAL, 0xffffff]), x - 1.6 + Math.cos(a) * 0.5, 0.75, pz + Math.sin(a) * 0.5, 0, 0, 0, 0.16); } w.add('g', sph(12), 0x3fae5a, x - 1.6, 0.85, pz, 0, 0, 0, 0.45, 0.35, 0.45); w.solid(x - 2.5, 0, pz - 0.9, x - 0.7, 0.6, pz + 0.9, { cam: false }); });
   w.rowSpots.gate = [x, z]; w.I({ kind: 'rgate', x: x - 1.6, y: 0, z, r: 2.6, label: '🔒 Ratita Row (DLC)' });
@@ -112,14 +112,14 @@ function street(w) {
   bunt(61.2); bunt(68.5); bunt(83.1); bunt(90.4);
   { const x = 99.4, z = 46.5; [-1, 1].forEach((s) => { w.add('x', cyl(10), 0x334155, x, 0, z + s * 2.2, 0, 0, 0, 0.12, 4.2, 0.12); w.solid(x - 0.15, 0, z + s * 2.2 - 0.15, x + 0.15, 4.2, z + s * 2.2 + 0.15); }); w.add('g', rbox(0.4, 2.4, 5.6, 0.12), PINK, x, 4.6, z); w.add('g', rbox(0.1, 2.0, 5.2, 0.06), 0xffffff, x - 0.22, 4.6, z);
     sign3d(w, 'GRAND OPENING', x - 0.3, 5.0, z, -PI / 2, 0.36, PINK, null); sign3d(w, 'TODAY ONLY: CHEESE CAKE', x - 0.3, 4.2, z, -PI / 2, 0.17, NAVY, null); for (let i = 0; i < 10; i++) w.add('l', sph(8), [CHEESE, TEAL, 0xffffff][i % 3], x - 0.25, 3.45, z - 2.5 + i * 0.55, 0, 0, 0, 0.09, 0.09, 0.09, 0.6);
-    gearAt(w, x - 0.2, 6.25, z + 2.0); }
+    gearAt(w, x - 0.8, 1.3, z + 2.2); }
   // fire hydrant + mailbox + flower beds by the doors
   { const x = 74.2, z = 41.6; w.add('g', rcyl(0.22, 0.75, 0.06, 18), 0xef4444, x, 0, z); w.add('g', sph(14), 0xef4444, x, 0.75, z, 0, 0, 0, 0.24, 0.2, 0.24); w.solid(x - 0.25, 0, z - 0.25, x + 0.25, 0.9, z + 0.25, { cam: false }); }
   flowerBed(w, 55, 40.7, 59.6, 41.5); flowerBed(w, 66.4, 40.7, 71.6, 41.5); flowerBed(w, 78, 40.7, 82, 41.5); flowerBed(w, 88.6, 40.7, 92.6, 41.5);
   flowerBed(w, 54, 52.5, 57.4, 53.0 - 0.02 + 0.0 + 0.01); flowerBed(w, 87, 52.5, 89.2, 53.0);
   // behind the B-side buildings: a little picnic lawn + Ratita water tower
   { const x = 76, z = 70.4; for (let i = 0; i < 4; i++) w.add('x', cyl(10), 0x64748b, x + (i % 2 ? 1.3 : -1.3), 0, z + (i < 2 ? 1.0 : -1.0), 0, 0, 0, 0.1, 5.2, 0.1); w.add('g', rcyl(2.0, 2.4, 0.4, 32), 0xf8fafc, x, 5.2, z); w.add('g', cone(32), PINK, x, 7.6, z, 0, 0, 0, 2.3, 1.2, 2.3); w.add('g', rbox(4.2, 0.12, 0.12, 0.04), CHEESE, x, 6.4, z - 2.0);
-    sign3d(w, 'RATITA', x, 6.0, z - 2.02, PI, 0.42, PINK, null); w.solid(x - 1.5, 0, z - 1.2, x + 1.5, 5.2, z + 1.2); gearAt(w, x, 8.9, z); for (let k = 0; k < 6; k++) w.slab('m', 0xb07a45, x + 2.4, k * 0.95, z - 1.4 + k * 0.0, 0.9, 0.2, 0.9, 0.04, { cam: false }); }
+    sign3d(w, 'RATITA', x, 6.0, z - 2.02, PI, 0.42, PINK, null); w.solid(x - 1.5, 0, z - 1.2, x + 1.5, 5.2, z + 1.2); gearAt(w, x + 2.4, 1.4, z - 1.6); }
   [[58, 70.5], [62, 71], [90, 70.6], [95, 71]].forEach(([x, z], i) => i % 2 ? bush(w, x, z, 1.1) : tree(w, x, z, 1.1, i === 2 ? 1 : 0));
   { const T = w.tf(66.5, 0, 70.6, 0.2); T.slab('m', 0xc58b52, 0, 0.75, 0, 2.2, 0.1, 1.1, 0.04); [-1, 1].forEach((s) => { T.box('m', 0xa86f3c, 0, 0.42, s * 0.85, 2.2, 0.08, 0.4, 0.03); T.box('m', 0x8b5a2b, s * 0.9, 0, 0, 0.12, 0.75, 1.9, 0.03); }); T.add('g', wedge(), CHEESE, 0.2, 0.85, 0, 0, 0.5, 0, 0.25); }
 }
@@ -131,7 +131,7 @@ function plaza(w) { const x = 75, z = 46.5;
   for (let i = 0; i < 8; i++) { const a = i / 8 * PI * 2; w.add('g', sph(12), [PINK, CHEESE][i % 2], x + Math.cos(a) * 3.3, 0.8, z + Math.sin(a) * 3.3, 0, 0, 0, 0.22, 0.18, 0.22); }
   w.solid(x - 2.9, 0, z - 2.9, x + 2.9, 0.78, z + 2.9); w.solid(x - 1.1, 0, z - 1.1, x + 1.1, 2.6, z + 1.1);
   [-1, 1].forEach((s) => sign3d(w, 'LUNA  FOUNDER', x + s * 1.02, 1.3, z, s > 0 ? PI / 2 : -PI / 2, 0.13, 0xd4a017, null));
-  w.rowSpots.statue = [x, 2.67, z]; gearAt(w, x + 0.35, 6.4, z);
+  w.rowSpots.statue = [x, 2.67, z]; gearAt(w, x, 1.6, z + 2.6);
   zipPad(w, 80.4, 51.0, 'row');
   w.secretsRow = [{ id: 'plaza', x, y: 0, z, r: 0.1 }];
 }
@@ -147,7 +147,7 @@ function yard(w) { const { xa, xb, za, zb, r, cz, w: tw } = TRACK;
   // start gantry over the north straight
   { const x = 76; [-1, 1].forEach((s) => { w.add('x', rcyl(0.18, 4.4, 0.05, 16), 0xe5e7eb, x, 0, zb + s * 2.3); w.solid(x - 0.2, 0, zb + s * 2.3 - 0.2, x + 0.2, 4.4, zb + s * 2.3 + 0.2); }); w.add('g', rbox(0.7, 0.9, 5.2, 0.15), NAVY, x, 4.6, zb);
     sign3d(w, 'TURBO TEST TRACK', x - 0.36, 4.42, zb, -PI / 2, 0.2, CHEESE, null); sign3d(w, 'TURBO TEST TRACK', x + 0.36, 4.42, zb, PI / 2, 0.2, CHEESE, null);
-    for (let i = 0; i < 5; i++) w.add('l', sph(10), [0xef4444, 0xef4444, 0xfacc15, 0xfacc15, 0x22c55e][i], x - 0.37, 4.95, zb - 1.0 + i * 0.5, 0, 0, 0, 0.13, 0.13, 0.06, 0.7); gearAt(w, x, 5.6, zb); }
+    for (let i = 0; i < 5; i++) w.add('l', sph(10), [0xef4444, 0xef4444, 0xfacc15, 0xfacc15, 0x22c55e][i], x - 0.37, 4.95, zb - 1.0 + i * 0.5, 0, 0, 0, 0.13, 0.13, 0.06, 0.7); gearAt(w, x, 2.3, zb + 2.9); }
   // start pad (green) + marshal booth with timing screens
   w.add('l', rcyl(0.9, 0.04, 0.02, 32), 0x22c55e, 77.6, -0.01, zb, 0, 0, 0, 1, 1, 1, 0.25); w.rowSpots.trackStart = [77.6, zb];
   w.I({ kind: 'rmg', id: 'track', x: 77.6, y: 0, z: zb, r: 1.6, label: '🏁 Run the TURBO TEST TRACK' });
@@ -194,7 +194,7 @@ function shells(w) { const sh = 'row';
     const T = w.tf(80.6, 5.9, 30, 0.4); T.add('g', capsule(20), 0xffffff, 0, 0.55, 0, PI / 2, 0, 0, 0.9, 1.4, 0.9); T.add('g', rbox(1.9, 0.35, 3.4, 0.15), PINK, 0, 0.1, 0.1); T.add('g', sph(18), TEAL, 0, 1.05, -0.6, 0, 0, 0, 0.75, 0.75, 0.75); for (let k = 0; k < 4; k++) T.add('x', torus(0.15, 16), 0xffffff, 0, 1.0, 0.2 + k * 0.35, 0, 0, PI / 2, 0.22, 0.22, 0.3); T.add('l', rbox(1.92, 0.08, 3.42, 0.03), TEAL, 0, 0.3, 0.1, 0, 0, 0, 1, 1, 1, 0.5);
     T.add('g', star(), CHEESE, 0.95, 0.75, 0.6, 0, PI / 2, 0, 0.35, 0.35, 0.2); }
   // GOUDA BYTE CAFE: cream + orange gable, giant cheese wedge on top
-  building(w, { id: 'r_cafe', shell: sh, x0: 53, z0: 53, x1: 66, z1: 67, ceil: 4.8, ext: 0xfff1c1, int: 0xfffbeb, trim: 0xffffff, frame: 0xffffff, base: 0xd97706, floor: ['tile', 0xfffbeb, 0xfde68a, 1.0], door: { side: 'n', a: 58, b: 61 }, sign: ['GOUDA BYTE CAFE', 0.32, 0xffffff, 0xf59e0b], awning: [CHEESE, 0xffffff], curtain: 0xffc93c, shutters: 0xf59e0b, boxCol: 0xb45309, li: 22 });
+  building(w, { id: 'r_cafe', shell: sh, x0: 53, z0: 53, x1: 66, z1: 67, ceil: 4.8, ext: 0xfff1c1, int: 0xfffbeb, trim: 0xffffff, frame: 0xffffff, base: 0xd97706, floor: ['wood', 0xd9a066], door: { side: 'n', a: 58, b: 61 }, sign: ['GOUDA BYTE CAFE', 0.32, 0xffffff, 0xf59e0b], awning: [CHEESE, 0xffffff], curtain: 0xffc93c, shutters: 0xf59e0b, boxCol: 0xb45309, li: 22 });
   w.region = sh; gable(w, 53, 53, 66, 67, 5.2, 0xff8a3d, 0xfff1c1, { alongX: true, chimney: [56, 64] }); { const T = w.tf(62.5, 7.4, 58, 0.3); T.add('g', wedge(), CHEESE, 0, 0, 0, 0, 0, 0, 1.6, 1.6, 1.6); [[0.3, 0.2, 0.75], [-0.4, 0.5, 0.75], [0.1, 0.9, 0.75]].forEach(([a, b, c]) => T.add('m', sph(12), 0xf59e0b, a, b, c, 0, 0, 0, 0.18, 0.18, 0.08)); }
   // R&D WORKSHOP: slate + orange, garage door, sawtooth roof with skylights
   building(w, { id: 'r_work', shell: sh, x0: 69, z0: 53, x1: 82, z1: 67, ceil: 5.6, ext: 0x64748b, int: 0xf1f5f9, trim: 0xff8a3d, frame: 0xff8a3d, base: 0x334155, floor: ['tile', 0xd1d5db, 0xbfc5cc, 2.0], door: { side: 'n', a: 73.5, b: 77.5, h: 4.2 }, sign: ['R&D WORKSHOP', 0.34, 0xffffff, 0xff8a3d], noBoxes: true, li: 28, lightCol: 0xf0f9ff });
@@ -243,7 +243,7 @@ function office(w) { w.region = 'r_office'; const I = w.I;
     I({ kind: 'fun', id: 'relev', x: 54.4, y: F, z: 33.0, r: 1.4, label: '🛗 Press the elevator button', sfx: 'click', msgs: ['🛗 *ding* … the doors don\'t open. A sticky note says: "FLOOR 2 COMING SOON. Love, Luna."', '🛗 *ding ding* You hear Pi-rat\'s voice: "Arr, that be the cheese storage floor! Not ready yet!"', '🛗 The elevator plays smooth jazz. You feel very fancy.'] }); }
   // ceiling banners
   for (let i = 0; i < 4; i++) { const x = 55.5 + i * 5; w.add('f', rbox(1.0, 1.6, 0.04, 0.03), [PINK, CHEESE, TEAL, PINK][i], x, 4.6, 38.2); w.add('x', cyl(6), 0xd4a017, x, 5.45, 38.2, 0, 0, PI / 2, 0.02, 1.2, 0.02); w.add('g', sph(10), 0xffffff, x, 4.7, 38.17, 0, 0, 0, 0.22, 0.22, 0.05); }
-  gearAt(w, 63, 6.0 - 0.55 + F, 31.2); bisc0(w);
+  gearAt(w, 55.8, 1.1, 31.6);
   // --- lab
   { const x = 63, z = 25.2; w.add('m', lathe([[0, 0], [0.7, 0], [0.7, 0.15], [0.45, 0.3], [0.4, 0.95], [0.6, 1.05], [0.6, 1.2], [0, 1.2]], 28, 'rped2'), 0xf8fafc, x, F, z); w.add('f', rcyl(0.48, 0.05, 0.02, 24), PINK, x, F + 1.2, z);
     w.add('e', lathe([[0.52, 0], [0.53, 0.35], [0.42, 0.7], [0.22, 0.86], [0, 0.9]], 28, 'rdome'), 0xe0f7ff, x + 0.7, F + 0.05, z + 0.5, 0, 0, 1.2); w.solid(x - 0.65, F, z - 0.65, x + 0.65, F + 1.3, z + 0.65);
@@ -262,7 +262,6 @@ function office(w) { w.region = 'r_office'; const I = w.I;
   K.hh('dogBowl', w, 61.4, 28.8, 0.18, CHEESE, TEAL);
   w.lights.push({ x: 63, y: 4, z: 25, c: 0xe0f2fe, i: 14, d: 14 });
 }
-function bisc0() {}
 // ---------------- GADGET STORE
 function store(w) { w.region = 'r_store'; const I = w.I;
   // checkout counter + register + Sprocket's corner; shelves of boxed gadgets behind
@@ -294,6 +293,10 @@ function store(w) { w.region = 'r_store'; const I = w.I;
   K.plant(w, 77.9, 39.0, 1.1); K.plant(w, 92.1, 39.0, 1.1); for (let i = 0; i < 3; i++) K.parcel(w, 92.0, F + i * 0.5, 25.6, 0.8);
   w.lights.push({ x: 85, y: 3.6, z: 33, c: 0xfff1f8, i: 12, d: 13 });
 }
+// a rounded bistro chair: cushioned seat, hoop back, four slim splayed legs
+function bistro(w, x, z, ry, c) { const T = w.tf(x, 0, z, ry); T.add('g', rcyl(0.24, 0.08, 0.035, 24), c, 0, 0.46, 0); T.add('x', torus(0.09, 24), 0x334155, 0, 0.46, 0, PI / 2, 0, 0, 0.24, 0.24, 0.3);
+  for (let i = 0; i < 4; i++) { const a = i / 4 * PI * 2 + PI / 4; T.add('x', cyl(8), 0x334155, Math.cos(a) * 0.17, 0, Math.sin(a) * 0.17, Math.sin(a) * 0.08, 0, -Math.cos(a) * 0.08, 0.018, 0.47, 0.018); }
+  T.add('x', torus(0.06, 24, PI), 0x334155, 0, 0.62, -0.2, 0, 0, 0, 0.22, 0.32, 0.22); T.add('g', rbox(0.38, 0.2, 0.05, 0.025), c, 0, 0.82, -0.21); T.solid(-0.25, 0, -0.27, 0.25, 0.55, 0.25, { cam: false }); }
 // ---------------- GOUDA BYTE CAFE
 function cafe(w) { w.region = 'r_cafe'; const I = w.I;
   // counter + cheese-a-ccino machine + pastry case + register; menu board on the back wall
@@ -306,7 +309,7 @@ function cafe(w) { w.region = 'r_cafe'; const I = w.I;
   for (let i = 0; i < 4; i++) { w.add('g', rcyl(0.38, 0.32, 0.08, 24), CHEESE, 55.2 + i * 0.9, 1.6 + F, 66.4 - 0.25); w.add('m', cyl(20), 0xe9a92a, 55.2 + i * 0.9, 1.6 + F + 0.16, 66.15, 0, 0, 0, 0.385, 0.06, 0.385); } w.add('m', rbox(4.0, 0.08, 0.6, 0.02), 0x9a6a3e, 56.6, 1.6, 66.35);
   I({ kind: 'rmg', id: 'cafe', x: 62.9, y: F, z: 62.6, r: 1.4, label: '🧀 Be the BARISTA at the Gouda Byte Cafe' });
   // tables + chairs; the fondue fountain; cups and plates
-  const tbl = (x, z, c) => { K.tableR(w, x, z, 0.62, 0.8, 0xffffff, 0x334155); w.add('g', rcyl(0.6, 0.02, 0.01, 24), c, x, 0.8, z); [0, 1, 2].forEach((k) => { const a = k / 3 * PI * 2 + 0.4; K.chair(w, x + Math.cos(a) * 1.0, 0, z + Math.sin(a) * 1.0, -a - PI / 2, c); }); w.add('g', rcyl(0.07, 0.12, 0.02, 12), 0xffffff, x + 0.2, 0.82, z); w.add('g', rcyl(0.14, 0.02, 0.01, 16), 0xffffff, x - 0.15, 0.82, z + 0.1); w.add('g', wedge(), CHEESE, x - 0.15, 0.86, z + 0.1, 0, 0.6, 0, 0.07); };
+  const tbl = (x, z, c) => { K.tableR(w, x, z, 0.62, 0.8, 0xffffff, 0x334155); w.add('g', torus(0.1, 40), c, x, 0.75, z, PI / 2, 0, 0, 0.62, 0.62, 0.45); [0, 1, 2].forEach((k) => { const a = k / 3 * PI * 2 + 0.4; bistro(w, x + Math.cos(a) * 1.0, z + Math.sin(a) * 1.0, Math.atan2(-Math.cos(a), -Math.sin(a)), c); }); w.add('g', rcyl(0.07, 0.12, 0.02, 12), 0xffffff, x + 0.2, 0.82, z); w.add('g', rcyl(0.14, 0.02, 0.01, 16), 0xffffff, x - 0.15, 0.82, z + 0.1); w.add('g', wedge(), CHEESE, x - 0.15, 0.86, z + 0.1, 0, 0.6, 0, 0.07); };
   tbl(57.4, 57.4, PINK); tbl(62.4, 56.2, TEAL); tbl(57.2, 61.6, 0xff8a3d);
   { const x = 61.6, z = 60.2; K.tableR(w, x, z, 0.7, 0.8, 0xffffff, 0x334155); for (let i = 0; i < 3; i++) w.add('x', lathe([[0, 0], [0.32 - i * 0.08, 0.02], [0.3 - i * 0.08, 0.08], [0.05, 0.1], [0.05, 0.28], [0, 0.28]], 24, 'fnd' + i), 0xd1d5db, x, 0.8 + i * 0.26, z); for (let i = 0; i < 3; i++) w.add('l', rcyl(0.28 - i * 0.08, 0.05, 0.02, 24), CHEESE, x, 0.86 + i * 0.26, z, 0, 0, 0, 1, 1, 1, 0.3); for (let i = 0; i < 6; i++) { const a = i / 6 * PI * 2; w.add('m', cyl(6), 0xd6b88a, x + Math.cos(a) * 0.45, 0.85, z + Math.sin(a) * 0.45, 0.6 * Math.sin(a), 0, -0.6 * Math.cos(a), 0.01, 0.3, 0.01); w.add('m', rbox(0.08, 0.08, 0.08, 0.02), 0xf3c58b, x + Math.cos(a) * 0.55, 1.1, z + Math.sin(a) * 0.55); } }
   // Torty's sun-lamp corner: warm sand, lettuce plate, glowing lamp
@@ -371,7 +374,7 @@ function museum(w) { w.region = 'r_museum'; const I = w.I;
   ped(96.2, 63.4, (x, y, z) => { w.add('g', rbox(0.6, 0.05, 0.4, 0.02), 0xffffff, x, y, z); for (let k = 0; k < 4; k++) w.add('g', capsule(10), [0xff8fc8, 0xfef3c7, 0x93c5fd, 0x86efac][k], x - 0.22 + k * 0.15, y + 0.12, z, 0, 0, 0, 0.05, 0.12, 0.05); w.add('g', sph(12), 0xffffff, x, y + 0.3, z - 0.1, 0, 0, 0, 0.14); }, 'SQUEAK PROOF SOCKS',
     ['🧦 SQUEAK-PROOF SOCKS. Sneak past any sleeping dog! (Tested on Officer Gouda. He still woke up. Snacks were involved.)', '🧦 Available in four flavours. Wait, colours. Four colours.']);
   // the big rocket in the back corner (reaches the ceiling)
-  { const x = 96.2, z = 66.0 - 0.4; w.add('g', lathe([[0, 0], [0.55, 0], [0.62, 0.5], [0.62, 3.2], [0.45, 4.2], [0.18, 4.8], [0, 5.0]], 32, 'rkt'), 0xffffff, x - 2.0, F + 0.2, z - 0.2); w.add('g', rcyl(0.64, 0.3, 0.05, 32), PINK, x - 2.0, F + 2.4, z - 0.2); for (let k = 0; k < 3; k++) { const a = k / 3 * PI * 2; w.add('g', rbox(0.08, 1.0, 0.6, 0.04), PINK, x - 2.0 + Math.cos(a) * 0.6, F + 0.6, z - 0.2 + Math.sin(a) * 0.6, 0, -a, 0); } w.add('e', sph(14), 0x7dd3fc, x - 2.0, F + 3.4, z + 0.36, 0, 0, 0, 0.22, 0.22, 0.08); w.add('x', rcyl(0.9, 0.2, 0.05, 28), 0x94a3b8, x - 2.0, F, z - 0.2); w.solid(x - 2.9, F, z - 1.1, x - 1.1, F + 5.2, z + 0.7); gearAt(w, x - 2.0, F + 5.55, z - 0.2);
+  { const x = 96.2, z = 66.0 - 0.4; w.add('g', lathe([[0, 0], [0.55, 0], [0.62, 0.5], [0.62, 3.2], [0.45, 4.2], [0.18, 4.8], [0, 5.0]], 32, 'rkt'), 0xffffff, x - 2.0, F + 0.2, z - 0.2); w.add('g', rcyl(0.64, 0.3, 0.05, 32), PINK, x - 2.0, F + 2.4, z - 0.2); for (let k = 0; k < 3; k++) { const a = k / 3 * PI * 2; w.add('g', rbox(0.08, 1.0, 0.6, 0.04), PINK, x - 2.0 + Math.cos(a) * 0.6, F + 0.6, z - 0.2 + Math.sin(a) * 0.6, 0, -a, 0); } w.add('e', sph(14), 0x7dd3fc, x - 2.0, F + 3.4, z + 0.36, 0, 0, 0, 0.22, 0.22, 0.08); w.add('x', rcyl(0.9, 0.2, 0.05, 28), 0x94a3b8, x - 2.0, F, z - 0.2); w.solid(x - 2.9, F, z - 1.1, x - 1.1, F + 5.2, z + 0.7); gearAt(w, x - 2.6, 1.9, z + 0.9);
     plaque(w, x - 3.4, z - 0.5, PI / 2, 'RATITA ROCKET'); I({ kind: 'fun', id: 'mrocket', x: x - 3.4, y: F, z: z - 0.8, r: 1.4, label: '🚀 Read about the Ratita Rocket', sfx: 'check', msgs: ['🚀 The RATITA ROCKET. It went to the moon once! Well, the moon-shaped bounce castle at Luna\'s birthday.', '🚀 Snowie painted the pink stripe. She wanted it to be ALL pink. Luna said "one stripe". They compromised: one BIG stripe.'] }); }
   // timeline wall with framed pictures (raised 3D frames), benches, velvet ropes
   for (let i = 0; i < 5; i++) { const x = 86.4 + i * 2.6; w.add('g', rbox(1.6, 1.1, 0.1, 0.04), 0xd4a017, x, 3.0, 66.62); w.add('m', rbox(1.4, 0.9, 0.04, 0.02), [0xbfdbfe, 0xfbcfe8, 0xfde68a, 0xbbf7d0, 0xddd6fe][i], x, 3.0, 66.56); w.add('g', [star(), heart(), wedge(), gear(8), sph(10)][i], [CHEESE, PINK, 0xffc83d, 0x94a3b8, TEAL][i], x, 3.0, 66.5, 0, 0, 0, 0.25, 0.25, 0.08); sign3d(w, ['2019', '2021', '2023', '2025', '2026'][i], x, 2.25, 66.55, PI, 0.08, NAVY, null); }

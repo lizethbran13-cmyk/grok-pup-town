@@ -4,6 +4,7 @@ import { S, persist } from './save.js';
 import { esc, $ } from './util.js';
 import { sfx } from './audio.js';
 import { panel, closePanel } from './ui.js';
+import { ownsRow } from './rowdata.js';
 import { SHIRTS, cleanLook } from './humans.js';
 const col = (L) => '#' + SHIRTS[cleanLook(L && L.look).shirt].toString(16).padStart(6, '0');
 const GN = window.GrokNet;
@@ -16,7 +17,7 @@ export class Net {
   send(m) { if (this.online && !this.room.isHost) this.room.send(m); }
   tick(dt, g) { if (!this.online) return; this.acc += dt; if (this.acc < 1 / 15) return; this.acc = 0; this.n++;
     if (this.room.isHost) { const ps = {}; for (const [pid, p] of g.players) ps[p.local ? this.room.pid : pid] = p.snap(); const m = { t: 's', T: +g.T.toFixed(2), ps };
-      m.tod = S.opts.tod || 'auto'; this.room.broadcast(m); }
+      m.tod = S.opts.tod || 'auto'; m.dlc = ownsRow() ? 1 : 0; this.room.broadcast(m); }
     else this.room.send({ t: 'p', s: g.me.snap() }); }
   lobby() { const app = this.app; if (!GN) return app.hud.toast('Online play unavailable'); if (this.online) return this.roomPanel(); app.busy = true;
     panel(`<div class="topBar"><button class="back" id="nBack">◀</button><h2>🌐 EXPLORE WITH FRIENDS</h2></div><p class="sub">Up to 3 visitors! One player hosts and shares the 5-letter code.</p>
@@ -44,12 +45,12 @@ export class Net {
     room.on('leave', (p) => { app.hud.toast(p.name + ' left'); if (app.game) app.game.removeRemote(p.pid); delete this.looks[p.pid]; if (app.state !== 'play') this.roomPanel(); });
     room.on('message', (d, from) => this.onMsg(d, from));
     room.on('reconnecting', () => app.hud.toast('Lost the host - reconnecting…'));
-    room.on('error', (e) => { this.status(e.title + ': ' + e.message); const g = app.game; if (g) for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local) g.removeRemote(pid); this.room = null; if (app.state === 'play') app.hud.toast(e.title + ' - you\'re exploring solo now'); });
+    room.on('error', (e) => { this.status(e.title + ': ' + e.message); const g = app.game; if (g) for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local) g.removeRemote(pid); this.room = null; if (g) g.rowShared = false; if (app.state === 'play') app.hud.toast(e.title + ' - you\'re exploring solo now'); });
     room.start(); }
   host(code) { this.status('Opening a room…', true); this.looks = {}; this.bind(GN.createRoom({ role: 'host', code: code || undefined, name: this.myName(), color: GN.COLORS[0], max: 3, rejoin: !!code })); }
   join(code) { this.status('Joining ' + code + '…', true); this.bind(GN.createRoom({ role: 'join', code, name: this.myName(), color: GN.COLORS[1], rejoin: !!this.fromHub })); }
   fromParams(prm) { this.fromHub = true; S.name = prm.name; persist(); this.lobby(); if (prm.mode === 'host') this.host(prm.code); else this.join(prm.code); }
-  leave() { if (!this.room) return; try { this.room.leave(); } catch (e) {} const g = this.app.game; if (g) for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local) g.removeRemote(pid); this.room = null; this.looks = {}; }
+  leave() { if (!this.room) return; try { this.room.leave(); } catch (e) {} const g = this.app.game; if (g) for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local) g.removeRemote(pid); this.room = null; this.looks = {}; if (g) g.rowShared = false; }
   onMsg(d, from) { const app = this.app, g = app.game; if (!d || typeof d !== 'object') return; const host = this.room && this.room.isHost;
     if (d.t === 'look' && host) { this.looks[from] = { name: GN.cleanName(d.name), look: cleanLook(d.look), outfit: String(d.outfit || 'none').slice(0, 12) }; this.room.broadcast({ t: 'looks', looks: this.looks }); this.applyLooks(); if (app.state !== 'play') this.roomPanel(); return; }
     if (d.t === 'looks' && !host) { this.looks = d.looks || {}; this.applyLooks(); if (app.state !== 'play') this.roomPanel(); return; }
@@ -58,6 +59,6 @@ export class Net {
     else { if (d.t === 's') { for (const pid in d.ps) { if (pid === this.room.pid) continue; const L = this.looks[pid] || { name: 'Visitor' }; g.addRemote(pid, L, this.slotOf(pid)).applySnap(d.ps[pid]); }
         for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local && !d.ps[pid]) g.removeRemote(pid);
         const off = d.T - g.T; if (Math.abs(off) > 1) g.T = d.T; else g.T += off * 0.3;
-        if (d.tod) g.hostTod = d.tod; } } }
+        if (d.tod) g.hostTod = d.tod; if (!!d.dlc !== !!g.rowShared) { g.rowShared = !!d.dlc; if (g.rowShared && !ownsRow()) app.hud.toast('🐀 The host shares Ratita Row with you!'); } } } }
   slotOf(pid) { const p = this.room && this.room.players().find((q) => q.pid === pid); return p ? p.slot : 1; }
 }

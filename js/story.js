@@ -1,5 +1,6 @@
 // Pup Town townsfolk, what they say, side tasks and the mystery "Who stole the Golden Bone?". Pure data + helpers.
 import { S, persist } from './save.js';
+import { ROW_NPCS, ROW_IDS, rowTalk, SHOP } from './rowdata.js';
 const PI = Math.PI;
 export const HATS = [
   { id: 'none', n: 'No Hat', how: 'Always yours' }, { id: 'ears', n: 'Puppy Ears Headband', how: "Find Candy's 3 squeaky toys" }, { id: 'fire', n: 'Fire Helmet', how: 'Rescue Mittens the kitten' },
@@ -70,7 +71,7 @@ export function boneStep() { const q = S.q.bone | 0, n = BONE_CLUES.filter((c) =
 export function sideTasks() { return [[S.flags.toys, `Find Candy's 3 squeaky toys (${S.toys.length}/3)`], [S.flags.kitten, 'Rescue Mittens from the tall tree in Paw Park'], [S.flags.garden, `Plant Torty's sunflowers (Martina) (${S.plants.length}/4)`],
   [S.flags.fetch, `Score 60+ at fetch with Rex (best ${S.best.fetch | 0})`], [S.flags.agility, `Finish the agility course in under 40 s (best ${S.best.agility ? S.best.agility.toFixed(1) + ' s' : '--'})`], [S.flags.groom, 'Groom a pup at Fluff & Puff'],
   [(S.best.bake | 0) >= 3, `Bake 3 perfect treats (best ${S.best.bake | 0}/3)`], [S.flags.barkade, 'Beat a high score at the Barkade'], [Object.keys(S.rats).length >= 3, `Say hi to the Ratita founders (${Object.keys(S.rats).length}/3)`], [S.flags.bus, 'Ride the Dog-Bus']]; }
-export function talk(id, G) {
+export function talk(id, G) { if (ROW_IDS.has(id)) return rowTalk(id, G);
   const L = (...a) => a.map((x) => (Array.isArray(x) ? x : [null, x])); const n = (S.talks[id] = (S.talks[id] | 0) + 1); persist(); const cyc = (arr) => arr[(n - 1) % arr.length]; const q = S.q.bone | 0;
   const suspect = (sid, lines) => { S.sus[sid] = Math.max(S.sus[sid] | 0, 1); persist(); return { lines: L(...lines), fx: () => G.toastMsg(S.sus[sid] >= 2 ? '✅ Alibi confirmed!' : '📝 Alibi noted in your journal') }; };
   const confirm = (sid) => { if ((S.sus[sid] | 0) === 1) { S.sus[sid] = 2; persist(); return true; } return false; };
@@ -148,3 +149,7 @@ export function talk(id, G) {
   return { lines: L('Woof!') }; }
 // golden biscuits / map hint used by the journal
 export function hint() { const q = S.q.bone | 0; if (q === 1) { for (const c of BONE_CLUES) if (!S.clues[c]) return { case: 'Check the empty display case in Town Hall.', flour: 'Something odd at the bakery… ask Chef Croissant.', card: 'The librarian has checkout cards on the desk.', hole: 'Look around the big oak in Paw Park.', log: 'Chief Sparky writes everything in his lookout log (top of the tower by the fire station).' }[c]; } return boneStep(); }
+
+// Ratita Super Expansion DLC: the Ratita Row folks join the town, and the Gadget Store hats join the Style Station
+NPCS.push(...ROW_NPCS);
+for (const it of SHOP) if (it.kind === 'hat' && !HATS.some((h) => h.id === it.id)) HATS.push({ id: it.id, n: it.n, how: '🛍️ Ratita Gadget Store (Ratita Row DLC)' });

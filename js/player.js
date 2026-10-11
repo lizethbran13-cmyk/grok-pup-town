@@ -22,7 +22,7 @@ export class Player {
   removeFrom(scene) { scene.remove(this.root, this.blob, this.hookLine); }
   setOutfit(o) { setOutfit(this.rig, o); }
   place(p, yaw = 0) { this.x = p[0]; this.y = p[1]; this.z = p[2]; this.vx = this.vy = this.vz = 0; this.yaw = yaw; this.zip = null; this.onGround = false; }
-  get runSpeed() { return 7 + up('speed') * 0.8 + (this.rat === 'luna' ? 0.4 : 0); }
+  get runSpeed() { return 7 + up('speed') * 0.8 + (this.gadgets.has('turbo') ? 2.1 : 0) + (this.rat === 'luna' ? 0.4 : 0); }
   // ---------------- local control ----------------
   update(dt, inp, game) {
     const w = game.world; if (this.respawnT > 0) { this.respawnT -= dt; if (this.respawnT <= 0) this.doRespawn(game); this.anim(dt); return; }

@@ -195,15 +195,16 @@ function outskirts(w) {
   // perimeter hedge (boundary)
   const hedge = (x0, z0, x1, z1) => { const L = Math.hypot(x1 - x0, z1 - z0), n = Math.ceil(L / 1.6); for (let i = 0; i <= n; i++) { const t = i / n; w.add('g', blobGeo(i & 31, 0.18, 2), i % 5 ? 0x2f9e4a : 0x3fae5a, x0 + (x1 - x0) * t, 1.0, z0 + (z1 - z0) * t, 0, i, 0, 1.1, 1.2, 1.1); }
     w.solid(Math.min(x0, x1) - 0.9, 0, Math.min(z0, z1) - 0.9, Math.max(x0, x1) + 0.9, 8, Math.max(z0, z1) + 0.9, { wall: true, cam: false }); };
-  hedge(-49, -68, 49, -68); hedge(-49, 72, 49, 72); hedge(-49, -68, -49, 72); hedge(49, -68, 49, 72);
+  hedge(-49, -68, 49, -68); hedge(-49, 72, 49, 72); hedge(-49, -68, -49, 72); hedge(49, -68, 49, 41.4); hedge(49, 51.6, 49, 72); // east hedge: the Ratita Gate gap (Ratita Row DLC)
+  const rowZone = (x, z, pad = 0) => x > 44 - pad && z > -12 - pad && z < 80 + pad; // Ratita Row lives east of the hedge: keep the decor out of it
   // rolling hills + cottages beyond (decor only)
-  for (let i = 0; i < 22; i++) { const a = i / 22 * PI * 2, rx = 92 + (i % 3) * 8, rz = 98 + (i % 4) * 6; const x = Math.cos(a) * rx, z = 6 + Math.sin(a) * rz; w.add('m', blobGeo(i, 0.12, 2), [0x6cc24a, 0x5cb83e, 0x7fcf55][i % 3], x, -2, z, 0, a, 0, 22 + (i % 4) * 5, 7 + (i % 3) * 3, 18); }
+  for (let i = 0; i < 22; i++) { const a = i / 22 * PI * 2, rx = 92 + (i % 3) * 8, rz = 98 + (i % 4) * 6; const x = Math.cos(a) * rx, z = 6 + Math.sin(a) * rz; if (rowZone(x, z, 20)) continue; w.add('m', blobGeo(i, 0.12, 2), [0x6cc24a, 0x5cb83e, 0x7fcf55][i % 3], x, -2, z, 0, a, 0, 22 + (i % 4) * 5, 7 + (i % 3) * 3, 18); }
   const cottage = (x, z, ry, c, rf) => { const T = w.tf(x, 0, z, ry); T.box('m', c, 0, 0, 0, 5, 3.4, 4.4, 0.1); T.box('m', 0xffffff, 0, 0, 2.21, 1.2, 2.2, 0.06, 0.05); T.box('e', 0xbfe9ff, -1.6, 1.4, 2.22, 1.0, 0.9, 0.04, 0.03); T.box('e', 0xbfe9ff, 1.6, 1.4, 2.22, 1.0, 0.9, 0.04, 0.03);
     T.add('g', prism(5.6, 2.2, 5.0), rf, 0, 3.4, 0, 0, PI / 2, 0); T.add('m', prism(5.0, 2.0, 4.42), c, 0, 3.4, 0, 0, PI / 2, 0); T.box('m', 0xb4533a, 1.4, 4.0, -0.8, 0.6, 1.6, 0.6, 0.05); };
-  [[-60, -40, 0.3], [-62, -10, 1.6], [-60, 30, 1.4], [-58, 58, 2.2], [60, -40, -0.3], [62, -5, -1.6], [60, 32, -1.5], [56, 62, -2.4], [-30, -78, 0], [0, -82, 0.1], [30, -78, -0.2], [-20, 84, PI], [24, 84, PI]].forEach(([x, z, ry], i) => cottage(x, z, ry, [0xffd6a5, 0xcaffbf, 0xbde0fe, 0xffc6ff, 0xfdffb6][i % 5], [0xe76f51, 0x2a9d8f, 0x6d597a, 0xb5179e][i % 4]));
-  for (let i = 0; i < 40; i++) { const a = i / 40 * PI * 2, r = 64 + (i % 5) * 4; tree(w, Math.cos(a) * r, 4 + Math.sin(a) * (r + 6), 1.4 + (i % 3) * 0.3, i % 6 === 0 ? 1 : 0); }
+  [[-60, -40, 0.3], [-62, -10, 1.6], [-60, 30, 1.4], [-58, 58, 2.2], [60, -40, -0.3], [62, -5, -1.6], [60, 32, -1.5], [56, 62, -2.4], [-30, -78, 0], [0, -82, 0.1], [30, -78, -0.2], [-20, 84, PI], [24, 84, PI]].forEach(([x, z, ry], i) => !rowZone(x, z) && cottage(x, z, ry, [0xffd6a5, 0xcaffbf, 0xbde0fe, 0xffc6ff, 0xfdffb6][i % 5], [0xe76f51, 0x2a9d8f, 0x6d597a, 0xb5179e][i % 4]));
+  for (let i = 0; i < 40; i++) { const a = i / 40 * PI * 2, r = 64 + (i % 5) * 4; if (rowZone(Math.cos(a) * r, 4 + Math.sin(a) * (r + 6), 3)) continue; tree(w, Math.cos(a) * r, 4 + Math.sin(a) * (r + 6), 1.4 + (i % 3) * 0.3, i % 6 === 0 ? 1 : 0); }
   for (let i = 0; i < 26; i++) { const t = i / 26; tree(w, -47 + t * 94, -64 + (i % 2) * 2, 1.2 + (i % 3) * 0.2, i % 7 === 0 ? 1 : 0); tree(w, -46 + t * 92, 69 - (i % 2) * 1.5, 1.2 + (i % 3) * 0.2, i % 5 === 0 ? 1 : 0); }
-  for (let i = 0; i < 18; i++) { const t = i / 18; tree(w, -46 + (i % 2) * 1.5, -60 + t * 126, 1.25, i % 6 === 0 ? 1 : 0); tree(w, 46 - (i % 2) * 1.5, -60 + t * 126, 1.25, i % 5 === 0 ? 1 : 0); }
+  for (let i = 0; i < 18; i++) { const t = i / 18; tree(w, -46 + (i % 2) * 1.5, -60 + t * 126, 1.25, i % 6 === 0 ? 1 : 0); const tz = -60 + t * 126; if (tz < 40 || tz > 53) tree(w, 46 - (i % 2) * 1.5, tz, 1.25, i % 5 === 0 ? 1 : 0); }
 }
 // ------------------------------------------------------------------------------------------------ building shells (exteriors + floors/ceilings/linings)
 function shells(w) {

@@ -16,6 +16,10 @@ import { sfx, playMusic } from './audio.js';
 import { S, persist } from './save.js';
 import { NPCS, talk, clueText, BONE_CLUES, HATS, BADGES } from './story.js';
 import { readMove, edge, held, IN } from './input.js';
+import { buildRow } from './row.js';
+import { RowPlay } from './rowplay.js';
+import { rowUI } from './rowgames.js';
+import { ROW_IDS, rowWants } from './rowdata.js';
 const PI = Math.PI;
 const TOYS = [[18.4, 0.0, 41.6], [22.9, 0.17, -29.4], [7.5, 0.0, -44.6]];
 const DAY = 420; // seconds per day/evening cycle
@@ -43,7 +47,7 @@ const stopIdx = (worldStop) => { const sAt = nearestS(...(worldStop === 0 ? [8, 
 export class Game {
   constructor(app, opts = {}) {
     this.app = app; this.scene = E.scene; this.net = app.net; this.hud = app.hud; this.T = 0; this.levelId = 'puptown';
-    const w = this.world = new World(); w.game = this; buildTown(w); w.finalize(this.scene);
+    const w = this.world = new World(); w.game = this; buildTown(w); buildRow(w); w.finalize(this.scene);
     setEnvironment(w.env); this.fx = new FX(this.scene); this.extra = []; this.lightPool = new LightPool(this.scene, w.lights, 4);
     this.players = new Map();
     this.me = new Player({ rat: 'human', look: S.look, outfit: S.outfit, name: S.name || 'You', local: true, gadgets: new Set(['blaster']), pid: opts.pid || 'me' });
@@ -51,7 +55,7 @@ export class Game {
     this.cam = { yaw: w.startYaw, pitch: 0.42, dist: w.camDist, pos: new THREE.Vector3(), tgt: new THREE.Vector3(), snap: true, shake: 0 };
     this.region = 'out'; this.vis = null; this.act = null; this.chat = null; this.balls = []; this.fetch = null; this.agil = null; this._vt = 0;
     this.stopMap = [stopIdx(0), stopIdx(1)];
-    this.buildNPCs(); this.buildDyn(); this.setVis('out', true); this.light(10);
+    this.buildNPCs(); this.buildDyn(); this.row = new RowPlay(this); rowUI(app.ui); this.setVis('out', true); this.light(10);
     playMusic('town');
   }
   add(o) { this.scene.add(o); this.extra.push(o); return o; }
@@ -75,14 +79,14 @@ export class Game {
     if (S.flags.kittenDown) { const k = this.world.spots.kittenDown; set('mittens', k[0], k[2], PI, 0, 'out'); }
     N.nugget.hidden = !(q === 2 || q === 3 || q >= 4);
     if (q >= 4) { set('candy', 0.6, -10.4, 0, 0.0, 'out'); set('nugget', 1.9, -10.9, -0.4, 0.0, 'out'); set('mayor', -1.4, -11.2, 0.4, 0.0, 'out'); N.candy.d.mode = 'happy'; N.nugget.d.mode = 'play'; } }
-  wants(n) { const id = n.id, q = S.q.bone | 0; if (n.hidden) return false;
+  wants(n) { const id = n.id, q = S.q.bone | 0; if (n.hidden) return false; if (ROW_IDS.has(id)) return this.row.owned() && rowWants(id);
     if (id === 'mayor') return q === 0 || q === 3; if (id === 'nugget') return q === 2; if (id === 'candy') return !S.flags.toys && (S.toys.length >= 3 || !S.talks.candy);
     if (id === 'sparky') return !S.flags.kitten && (S.flags.kittenDown || !S.talks.sparky) || (q === 1 && !S.clues.log && !S.talks.sparky); if (id === 'mittens') return !S.flags.kittenDown;
     if (id === 'martina') return !S.flags.garden && (S.plants.length >= 4 || !S.talks.martina); if (id === 'croissant') return (S.best.bake | 0) >= 3 && !S.hats.chef || (q === 1 && !S.clues.flour && !S.talks.croissant);
     if (id === 'rex') return !S.talks.rex; if (id === 'dash') return !S.talks.dash; if (['luna', 'pirat', 'snowie'].includes(id)) return !S.rats[id];
     if (['pepper', 'rascal', 'fifi'].includes(id)) return q >= 1 && q < 3 && !(S.sus[id] | 0); if (id === 'suds') return (S.sus.rascal | 0) === 1; if (id === 'ace') return (S.sus.fifi | 0) === 1; return false; }
   updateNPCs(dt) { const me = this.me, T = this.T;
-    for (const n of this.npcs) { const vis = !n.hidden && this.vis.has(n.region === 'out' ? 'out' : n.region) && !(n.region === 'out' && this.region !== 'out' && (me.x - n.x) ** 2 + (me.z - n.z) ** 2 > 625); n.rig.root.visible = vis; n.mark.visible = false; if (!vis) continue;
+    for (const n of this.npcs) { const d2 = (me.x - n.x) ** 2 + (me.z - n.z) ** 2; const vis = !n.hidden && this.vis.has(n.region === 'out' ? 'out' : n.region) && !(n.region === 'out' && this.region !== 'out' && d2 > 625) && !((n.region === 'row' || (n.region === 'out' && this.row && this.row.inside())) && d2 > 2025); n.rig.root.visible = vis; n.mark.visible = false; if (!vis) continue;
       const near = Math.hypot(me.x - n.x, me.z - n.z) < 4 && Math.abs(me.y - n.y) < 3; let sp = 0; const talking = this.chat && this.chat.npc === n;
       if (n.d.walk && !talking && !near) { const p = n.d.walk[n.wp]; const dx = p[0] - n.x, dz = p[1] - n.z, d = Math.hypot(dx, dz); const v = n.id === 'lola' ? 4.5 : n.kind === 'martina' ? 0.8 : 2.4;
         if (d < 0.3) n.wp = (n.wp + 1) % n.d.walk.length; else { n.x += dx / d * v * dt; n.z += dz / d * v * dt; let t = Math.atan2(dx, dz) - n.yaw; while (t > PI) t -= PI * 2; while (t < -PI) t += PI * 2; n.yaw += t * Math.min(1, dt * 8); sp = v; }
@@ -139,9 +143,9 @@ export class Game {
   bonePos() { const q = S.q.bone | 0, b = this.bone; b.userData.carry = q === 3; if (q >= 4) { b.visible = true; b.position.set(...this.world.spots.bonePed); b.scale.setScalar(0.9); } else if (q === 3) { b.visible = true; b.scale.setScalar(0.7); } else b.visible = false; }
   // ------------------------------------------------ region culling: interiors only draw when you're inside or near their door
   setVis(r, force) { this._vt -= 1; if (r === this.region && !force && this._vt > 0) return; this._vt = 15; const me = this.me; const v = new Set(['shell', 'out', r]);
-    for (const k in DOORS) { const [dx, dz] = DOORS[k]; if (Math.hypot(me.x - dx, me.z - dz) < 15) v.add(k); }
+    for (const k in DOORS) { const [dx, dz] = DOORS[k]; if (Math.hypot(me.x - dx, me.z - dz) < 15) v.add(k); } if (this.row) this.row.vis(v);
     const key = [...v].sort().join(','); if (key === this._vk && r === this.region) return; this._vk = key; this.region = r; this.vis = v;
-    for (const k in this.world.regionMeshes) { const on = v.has(k); for (const m of this.world.regionMeshes[k]) m.visible = on; }
+    for (const k in this.world.regionMeshes) { const on = v.has(k); for (const m of this.world.regionMeshes[k]) m.visible = on; } if (this.row) { this.row._culled = true; this.row.farCull(); }
     this.bookcase.visible = v.has('library'); }
   areaLabel() { const r = REGIONS.find((q) => q.id === this.region); return r ? r.name : areaName(this.me.x, this.me.z); }
   // ------------------------------------------------ frame
@@ -153,7 +157,7 @@ export class Game {
     this.setVis(regionAt(me.x, me.y + 0.3, me.z)); this.hud.region(this.areaLabel());
     for (const p of this.players.values()) if (!p.local) { p.remoteUpdate(dt); p.updateBlob(w); }
     updateFrustum(E.camera);
-    this.updateNPCs(dt); this.anim(dt); this.updateBalls(dt); this.updateFetch(dt); this.updateAgility(dt); this.updateBook(dt); this.collect(); this.secretsCheck();
+    this.updateNPCs(dt); this.anim(dt); this.updateBalls(dt); this.updateFetch(dt); this.updateAgility(dt); this.updateBook(dt); this.row.update(dt); this.collect(); this.secretsCheck();
     this.updateAct(); if (inp.actP && this.act) this.doAct(this.act);
     this.net.tick && this.net.tick(dt, this);
     this.updateCam(dt); this.render(dt); this.hud.update(dt, this); this.lightPool.update(dt, me.x, me.y + 2, me.z); }
@@ -190,7 +194,7 @@ export class Game {
     s.dx = x - px; s.dz = z - pz; s.dy = 0; s.min = [x - hx, 0, z - hz]; s.max = [x + hx, 3.2, z + hz];
     const me = this.me; if (me.x > s.min[0] - 0.3 && me.x < s.max[0] + 0.3 && me.z > s.min[2] - 0.3 && me.z < s.max[2] + 0.3 && me.y < 3.0) { const dxp = me.x - x, dzp = me.z - z; const side = Math.abs(dxp) / hx > Math.abs(dzp) / hz; if (side) me.x = x + Math.sign(dxp || 1) * (hx + 0.35); else me.z = z + Math.sign(dzp || 1) * (hz + 0.35); if (!this._beep || this.T - this._beep > 2.5) { this._beep = this.T; sfx('honk'); this.toastMsg('🚌 Beep beep! (The Dog-Bus gives you a friendly nudge.)'); } } }
   // ------------------------------------------------ throwing balls (BLAST button = 🎾 THROW). Nearby dogs chase them!
-  fireBlast(p) { if (this.fetch && this.fetch.phase !== 'aim') return; const m = this.ballM.clone(); const pw = this.fetch ? 4 + this.fetch.pow * 12 : 7; const a = p.yaw; m.position.set(p.x + Math.sin(a) * 0.5, p.y + 1.4, p.z + Math.cos(a) * 0.5); this.scene.add(m);
+  fireBlast(p) { if (this.row && this.row.range) { this.row.throwAt(p); return; } if (this.fetch && this.fetch.phase !== 'aim') return; const m = this.ballM.clone(); const pw = this.fetch ? 4 + this.fetch.pow * 12 : 7; const a = p.yaw; m.position.set(p.x + Math.sin(a) * 0.5, p.y + 1.4, p.z + Math.cos(a) * 0.5); this.scene.add(m);
     const t = 0.55 + pw * 0.06; const vy = 4.5 + pw * 0.25; const ball = { m, vx: Math.sin(a) * pw / (t * 1.2), vz: Math.cos(a) * pw / (t * 1.2), vy, t: 0, land: false, fetch: !!this.fetch, x0: p.x, z0: p.z };
     this.balls.push(ball); sfx('jump'); if (this.fetch) { this.fetch.phase = 'fly'; this.fetch.ball = ball; } else this.chaseBall(ball); }
   chaseBall(ball) { let best = null, bd = 14; for (const n of this.npcs) { if (n.kind !== 'dog' || n.hidden || n.d.walk || n.override || n.region !== 'out' || n.id === 'rex' && this.fetch) continue; const d = Math.hypot(n.x - ball.m.position.x, n.z - ball.m.position.z); if (d < bd) { bd = d; best = n; } }
@@ -254,8 +258,8 @@ export class Game {
     if (best && best.kind === 'plant' && S.plants.includes(best.i)) best = null;
     if (this.fetch || this.agil) best = best && (best.id === 'fetch' || best.id === 'agility') ? Object.assign({}, best, { label: '✖ Stop' }) : null;
     for (const n of this.npcs) { if (!n.rig.root.visible || n.override) continue; const r = n.kind === 'martina' ? 2.8 : n.d.look.b === 'greatdane' ? 2.8 : n.kind === 'kitten' ? 2.2 : 2.3; const d = Math.hypot(me.x - n.x, me.z - n.z); if (d < r && Math.abs(me.y - n.y) < 2 && d - 0.2 < bd) { bd = d; best = { kind: 'npc', npc: n, label: '💬 Talk to ' + n.d.n.split(' (')[0] }; } }
-    this.act = best; this.hud.setAct(this.chat ? null : best); }
-  doAct(o) { const ui = this.app.ui; sfx('click');
+    if (this.row) best = this.row.label(best); this.act = best; this.hud.setAct(this.chat ? null : best); }
+  doAct(o) { const ui = this.app.ui; sfx('click'); if (o.kind[0] === 'r' && this.row) { this.row.act(o); return; }
     if (o.kind === 'npc') { const r = talk(o.npc.id, this); this.chat = { npc: o.npc }; ui.dialog(o.npc.d.n, r.lines, () => { this.chat = null; if (r.fx) r.fx(); this.recheck(); }); }
     else if (o.kind === 'clue') this.addClue(o.id.replace('clue_', ''));
     else if (o.kind === 'map') ui.map(this);
