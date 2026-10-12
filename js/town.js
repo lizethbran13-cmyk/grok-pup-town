@@ -2,9 +2,9 @@
 // region so only rooms you can see are drawn), Paw Park, Candy's house + backyard, Lookout Hill and a leafy outer ring.
 // Everything is real 3D: rounded boxes, lathes, tubes, extruded 3D lettering. No billboards.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38d';
-import { interiors } from './interiors.js?v=20261011r38d';
-import { park } from './park.js?v=20261011r38d';
+import * as K from './kit.js?v=20261011r38e';
+import { interiors } from './interiors.js?v=20261011r38e';
+import { park } from './park.js?v=20261011r38e';
 const { wall, D, G, floor, ceiling, sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, blobGeo, pick, tree, bush, lampPost, bench, flowerBed, fenceRun, rock } = K;
 const R = K.R, PI = Math.PI; let I = null;
 export const FL = 0.02; // building floor level

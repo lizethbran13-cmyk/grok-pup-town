@@ -3,8 +3,8 @@
 // break room. Rooftop (y 11.2): Snowie's Sky Tours helipad, telescopes over Pup Town, garden, deck chairs, the rat logo.
 // Everything is authored at floor level and lifted with w.oy, so every prop helper works unchanged.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38d';
-import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38d';
+import * as K from './kit.js?v=20261011r38e';
+import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38e';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, wedge, gear, tree, bush, pick, D, G } = K;
 const PI = Math.PI, F = 0.05, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const F2Y = 6.4, F2H = 4.8, ROOFY = F2Y + F2H; // floor 2 base, storey height, roof deck
@@ -56,6 +56,7 @@ function inner(w) { const H = 4.4, int = 0xfdf2f8, o = { th: 0.12, frame: PINK, 
   K.wall(w, 'z', 64.0, 20.3, 27.9, H, 0xffffff, [], { th: 0.2, trim: PINK, base: 0xe5e7eb });
   K.wall(w, 'z', 61.0, 31.0, 39.7, H, 0xffffff, [G(31.4, 34.6, 3.4, 0.9), D(35.2, 37.6, 3.0), G(38.0, 39.5, 3.4, 0.9)], { th: 0.2, frame: 0xd4a017, trim: PINK, base: 0xe5e7eb, blinds: 0xffffff, blindSide: -1 });
   K.wall(w, 'x', 31.0, 61.1, 72.7, H, 0xfff1f8, [], { th: 0.2, trim: PINK, base: 0xe5e7eb });
+  w.solid(60.88, 0.9, 31.4, 61.12, 3.4, 34.6); w.solid(60.88, 0.9, 38.0, 61.12, 3.4, 39.5); // the glass keeps the camera in the room it belongs to
   K.floor(w, 53.3, 28.1, 61.0, 39.7, 'marble', F, 0xfff7fb, 0xfce7f3, 2.0); K.floor(w, 61.0, 28.1, 72.7, 30.9, 'marble', F, 0xfff7fb, 0xfce7f3, 2.0);
   K.floor(w, 61.1, 31.1, 72.7, 39.7, 'wood', F, 0xb7804b); K.floor(w, 53.3, 20.3, 63.9, 27.9, 'tile', F, 0xe2e8f0, 0xcbd5e1, 1.0); K.floor(w, 64.1, 20.3, 72.7, 27.9, 'wood', F, 0xe8b989);
   K.ceiling(w, 53.0, 20.0, 73.0, 40.0, H, 0xfffaf2, { li: 26, lightCol: 0xfff1f8 });

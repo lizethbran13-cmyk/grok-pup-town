@@ -3,13 +3,13 @@
 // Pup Town with commentary, the occasional cartoony bumpy landing (1 in 4, never on your first tour), dizzy stars,
 // and the Ratita tow-drone that brings the heli home. Co-op: the tour start is broadcast and everyone near the pad rides.
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js?v=20261011r38d';
-import { P } from './geo.js?v=20261011r38d';
-import { rcyl, star } from './shapes.js?v=20261011r38d';
-import { persist } from './save.js?v=20261011r38d';
-import { panel, closePanel } from './ui.js?v=20261011r38d';
-import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38d';
-import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38d';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38e';
+import { P } from './geo.js?v=20261011r38e';
+import { rcyl, star } from './shapes.js?v=20261011r38e';
+import { persist } from './save.js?v=20261011r38e';
+import { panel, closePanel } from './ui.js?v=20261011r38e';
+import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38e';
+import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38e';
 const PI = Math.PI, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const smooth = (t) => t * t * (3 - 2 * t);
