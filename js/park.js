@@ -1,7 +1,7 @@
 // Paw Park: entrance arch, dog run, agility course, fetch field, duck pond with stepping stones, the big oak (clue),
 // Mittens' climbing tree, gazebo bandstand, picnic spots, flowers everywhere.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38c';
+import * as K from './kit.js?v=20261011r38d';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, blobGeo, pick, tree, bush, lampPost, bench, flowerBed, fenceRun } = K;
 const R = K.R, PI = Math.PI;
 const bisc = (w, x, y, z) => w.gears.push([x, y, z]);

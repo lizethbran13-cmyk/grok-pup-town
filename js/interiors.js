@@ -1,6 +1,6 @@
 // Pup Town interiors: every building is a real place, packed with props and things to do.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38c';
+import * as K from './kit.js?v=20261011r38d';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, blobGeo, pick, PR } = K;
 const R = K.R, PI = Math.PI, FL = 0.12;
 const BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];

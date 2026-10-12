@@ -1,7 +1,7 @@
 // RATITA SUPER EXPANSION (DLC #38, MEGA, unlock key grokDLC.puptown.ratita_super_expansion)
 // Ratita Industries opens its Pup Town branch: Ratita Row, a whole new district east of Paw Park.
 // Data only: ownership check, the district save, employees + what they say, the mystery, the Gadget Store and achievements.
-import { S, persist } from './save.js?v=20261011r38c';
+import { S, persist } from './save.js?v=20261011r38d';
 const PI = Math.PI;
 export const DLC_KEY = 'grokDLC.puptown.ratita_super_expansion';
 export const DLC_NAME = 'Ratita Super Expansion';

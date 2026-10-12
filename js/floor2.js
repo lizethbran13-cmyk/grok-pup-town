@@ -3,13 +3,13 @@
 // Pup Town with commentary, the occasional cartoony bumpy landing (1 in 4, never on your first tour), dizzy stars,
 // and the Ratita tow-drone that brings the heli home. Co-op: the tour start is broadcast and everyone near the pad rides.
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js?v=20261011r38c';
-import { P } from './geo.js?v=20261011r38c';
-import { rcyl, star } from './shapes.js?v=20261011r38c';
-import { persist } from './save.js?v=20261011r38c';
-import { panel, closePanel } from './ui.js?v=20261011r38c';
-import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38c';
-import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38c';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38d';
+import { P } from './geo.js?v=20261011r38d';
+import { rcyl, star } from './shapes.js?v=20261011r38d';
+import { persist } from './save.js?v=20261011r38d';
+import { panel, closePanel } from './ui.js?v=20261011r38d';
+import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38d';
+import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38d';
 const PI = Math.PI, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const smooth = (t) => t * t * (3 - 2 * t);
@@ -159,7 +159,7 @@ export class Floor2 {
   rideMe(dt) { const g = this.g, me = g.me, A = this.tour; const v = this.seatPos(A ? A.seat : 0, new THREE.Vector3()); me.x = v.x; me.y = v.y; me.z = v.z; me.yaw = this.heli.yaw; me.vx = me.vy = me.vz = 0; me.onGround = true; me.speed = 0; me.anim(dt); }
   camStart() { const g = this.g, c = g.cam; this.cr = { pos: E0(g), yaw: this.heli.yaw, look: new THREE.Vector3(this.heli.pos.x, this.heli.pos.y + 1.5, this.heli.pos.z) };
     g.camRide = (dt, cc, camera) => { const H = this.heli, C = this.cr; C.yaw = angLerp(C.yaw, H.yaw, Math.min(1, dt * 1.3)); const fw = new THREE.Vector3(Math.sin(C.yaw), 0, Math.cos(C.yaw)); const air = H.pos.y > ROOFY + 3 || (this.tour && this.tour.phase !== 'fly') || this.tow;
-      const back = air ? 13 : 9.5, upY = air ? 5.2 : 3.6; const ca = C.yaw + (air ? 0.6 : 0.35), want = new THREE.Vector3(H.pos.x - Math.sin(ca) * back, H.pos.y + upY, H.pos.z - Math.cos(ca) * back); // 3/4 rear view: the passengers show past the tail const lk = new THREE.Vector3(H.pos.x + fw.x * 4, H.pos.y + 1.4, H.pos.z + fw.z * 4);
+      const back = air ? 13 : 9.5, upY = air ? 5.2 : 3.6; const ca = C.yaw + (air ? 0.6 : 0.35), want = new THREE.Vector3(H.pos.x - Math.sin(ca) * back, H.pos.y + upY, H.pos.z - Math.cos(ca) * back); /* 3/4 rear view: the passengers show past the tail */ const lk = new THREE.Vector3(H.pos.x + fw.x * 4, H.pos.y + 1.4, H.pos.z + fw.z * 4);
       const k = 1 - Math.exp(-dt * 2.6); C.pos.lerp(want, k); C.look.lerp(lk, 1 - Math.exp(-dt * 4)); const sh = (cc.shake || 0); cc.shake = Math.max(0, sh - dt * 1.5);
       camera.position.set(C.pos.x + (Math.random() - 0.5) * sh, C.pos.y + (Math.random() - 0.5) * sh, C.pos.z + (Math.random() - 0.5) * sh); camera.lookAt(C.look); if (C.f0 == null) C.f0 = camera.fov; const fv = C.f0 * 0.92; if (Math.abs(camera.fov - fv) > 0.01) { camera.fov = fv; camera.updateProjectionMatrix(); } cc.pos.copy(camera.position); cc.tgt.copy(C.look); }; }
   camEnd() { const g = this.g; if (this.cr && this.cr.f0) { E_CAM(g).fov = this.cr.f0; E_CAM(g).updateProjectionMatrix(); } g.camRide = null; document.body.classList.remove('riding'); const c = g.cam; c.yaw = g.me.yaw; c.snap = true; const cam = g.cam; void cam; }
