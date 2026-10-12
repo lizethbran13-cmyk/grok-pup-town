@@ -1,6 +1,6 @@
 // Pup Town 2D mini-games (overlay panels): Treat Bakery, Grooming Salon, Squirrel Dash + Bone Stacker (Barkade cabinets).
-import { S, persist } from './save.js?v=20261011r38e';
-import { sfx } from './audio.js?v=20261011r38e';
+import { S, persist } from './save.js?v=20261011r38f';
+import { sfx } from './audio.js?v=20261011r38f';
 const $q = (c, s) => c.querySelector(s);
 function loop(cv, f) { let lt = performance.now(), alive = true; const tick = () => { if (!alive || !cv.isConnected) return; requestAnimationFrame(tick); const n = performance.now(); const dt = Math.min(0.05, (n - lt) / 1000); lt = n; f(dt); }; requestAnimationFrame(tick); return () => alive = false; }
 const rr = (g, x, y, w, h, r) => { g.beginPath(); g.roundRect(x, y, w, h, r); };

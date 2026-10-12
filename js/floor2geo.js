@@ -3,8 +3,8 @@
 // break room. Rooftop (y 11.2): Snowie's Sky Tours helipad, telescopes over Pup Town, garden, deck chairs, the rat logo.
 // Everything is authored at floor level and lifted with w.oy, so every prop helper works unchanged.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38e';
-import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38e';
+import * as K from './kit.js?v=20261011r38f';
+import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38f';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, wedge, gear, tree, bush, pick, D, G } = K;
 const PI = Math.PI, F = 0.05, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const F2Y = 6.4, F2H = 4.8, ROOFY = F2Y + F2H; // floor 2 base, storey height, roof deck
@@ -53,13 +53,17 @@ function inner(w) { const H = 4.4, int = 0xfdf2f8, o = { th: 0.12, frame: PINK, 
   K.wall(w, 'z', 72.72, 20.3, 39.7, H, 0xfff7e6, [G(21, 27, 3.9, 1.2), G(32, 39, 3.9, 1.2)], o);
   // partitions: lab + break room (north), corridor, Luna's office (glass front)
   K.wall(w, 'x', 28.0, 53.3, 72.7, H, 0xffffff, [D(56.4, 59.0, 3.0), D(67.6, 70.2, 3.0)], { th: 0.2, frame: TEAL, trim: PINK, base: 0xe5e7eb });
-  K.wall(w, 'z', 64.0, 20.3, 27.9, H, 0xffffff, [], { th: 0.2, trim: PINK, base: 0xe5e7eb });
+  K.wall(w, 'z', 65.5, 20.3, 27.9, H, 0xffffff, [], { th: 0.2, trim: PINK, base: 0xe5e7eb });
   K.wall(w, 'z', 61.0, 31.0, 39.7, H, 0xffffff, [G(31.4, 34.6, 3.4, 0.9), D(35.2, 37.6, 3.0), G(38.0, 39.5, 3.4, 0.9)], { th: 0.2, frame: 0xd4a017, trim: PINK, base: 0xe5e7eb, blinds: 0xffffff, blindSide: -1 });
   K.wall(w, 'x', 31.0, 61.1, 72.7, H, 0xfff1f8, [], { th: 0.2, trim: PINK, base: 0xe5e7eb });
   w.solid(60.88, 0.9, 31.4, 61.12, 3.4, 34.6); w.solid(60.88, 0.9, 38.0, 61.12, 3.4, 39.5); // the glass keeps the camera in the room it belongs to
   K.floor(w, 53.3, 28.1, 61.0, 39.7, 'marble', F, 0xfff7fb, 0xfce7f3, 2.0); K.floor(w, 61.0, 28.1, 72.7, 30.9, 'marble', F, 0xfff7fb, 0xfce7f3, 2.0);
-  K.floor(w, 61.1, 31.1, 72.7, 39.7, 'wood', F, 0xb7804b); K.floor(w, 53.3, 20.3, 63.9, 27.9, 'tile', F, 0xe2e8f0, 0xcbd5e1, 1.0); K.floor(w, 64.1, 20.3, 72.7, 27.9, 'wood', F, 0xe8b989);
-  K.ceiling(w, 53.0, 20.0, 73.0, 40.0, H, 0xfffaf2, { li: 26, lightCol: 0xfff1f8 });
+  K.floor(w, 61.1, 31.1, 72.7, 39.7, 'wood', F, 0xb7804b); K.floor(w, 53.3, 20.3, 65.4, 27.9, 'tile', F, 0xe2e8f0, 0xcbd5e1, 1.0); K.floor(w, 65.6, 20.3, 72.7, 27.9, 'wood', F, 0xe8b989);
+  K.ceiling(w, 53.0, 20.0, 73.0, 40.0, H, 0xfffaf2, { lamps: false, li: 26, lightCol: 0xfff1f8 });
+  // clean soft-cream ceiling liner (unlit, so the green/brown sky-ground bounce can't tint it) + light panels per room
+  for (const [x0, z0, x1, z1, nx, nz] of [[53.3, 28.1, 61.0, 39.7, 2, 3], [61.0, 28.1, 72.7, 30.9, 3, 1], [61.1, 31.1, 72.7, 39.7, 3, 2], [53.3, 20.3, 65.4, 27.9, 3, 2], [65.6, 20.3, 72.7, 27.9, 2, 2]]) {
+    w.add('l', rbox(x1 - x0, 0.04, z1 - z0, 0.01), 0xe8e1d4, (x0 + x1) / 2, H - 0.03, (z0 + z1) / 2);
+    for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) { const x = x0 + (i + 0.5) * (x1 - x0) / nx, z = z0 + (j + 0.5) * (z1 - z0) / nz; w.add('g', rbox(1.5, 0.08, 0.9, 0.03), 0xf8fafc, x, H - 0.08, z); w.add('l', rbox(1.32, 0.04, 0.72, 0.02), 0xfffbf0, x, H - 0.12, z); } }
   elevatorFront(w, 53.36, F, 33.0, 'f2'); }
 // ---------------- elevator lobby + reception (Hazel), lounge, notice board, the floor directory
 function lobby(w) { const I = w.I;
@@ -99,25 +103,25 @@ function lunaOffice(w) { const I = w.I;
   w.lights.push({ x: 67, y: 3.2, z: 35.5, c: 0xfff1f8, i: 10, d: 10 }); }
 // ---------------- GADGET TESTING LAB: test chamber, crash-test sled, jetpack rig, goggles rack
 function lab(w) { const I = w.I;
-  K.hazard(w, 58.6, 24.0, 4.2, 4.2, 0);
+  K.hazard(w, 55.2, 22.3, 3.6, 3.6, 0);
   // glass test chamber with a hovering gadget inside
-  { const x = 58.6, z = 24.0; w.add('x', rcyl(1.6, 0.25, 0.06, 32), 0x475569, x, F, z); w.add('l', rcyl(1.5, 0.03, 0.01, 32), TEAL, x, F + 0.26, z, 0, 0, 0, 1, 1, 1, 0.5); w.add('e', rcyl(1.5, 2.8, 0.04, 32), 0xe0f7ff, x, F + 0.28, z); w.add('x', rcyl(1.6, 0.2, 0.05, 32), 0x475569, x, F + 3.08, z); w.solid(x - 1.5, 0, z - 1.5, x + 1.5, 3.3, z + 1.5);
+  { const x = 55.2, z = 22.3; w.add('x', rcyl(1.6, 0.25, 0.06, 32), 0x475569, x, F, z); w.add('l', rcyl(1.5, 0.03, 0.01, 32), TEAL, x, F + 0.26, z, 0, 0, 0, 1, 1, 1, 0.5); w.add('e', rcyl(1.5, 2.8, 0.04, 32), 0xe0f7ff, x, F + 0.28, z); w.add('x', rcyl(1.6, 0.2, 0.05, 32), 0x475569, x, F + 3.08, z); w.solid(x - 1.5, 0, z - 1.5, x + 1.5, 3.3, z + 1.5);
     w.add('g', rbox(0.6, 0.36, 0.3, 0.1), PINK, x, 1.7, z); [-1, 1].forEach((k) => { w.add('g', rcyl(0.12, 0.42, 0.04, 16), 0xe5e7eb, x + k * 0.22, 1.52, z - 0.2); w.add('l', cone(12), 0xff8a3d, x + k * 0.22, 1.2, z - 0.2, PI, 0, 0, 0.09, 0.2, 0.09, 0.9); }); sign3d(w, 'TEST CHAMBER 1', x, F + 0.6, z + 1.62, 0, 0.09, NAVY, null); }
   // crash-test dummy dog on a rocket sled + bumper wall
-  { const T = w.tf(54.6, F, 22.0, 0); T.slab('x', 0x94a3b8, 0, 0, 0, 1.2, 0.3, 1.6, 0.06); T.add('g', sph(16), 0xfde047, 0, 0.75, 0, 0, 0, 0, 0.35, 0.3, 0.45); T.add('g', sph(14), 0xfde047, 0, 1.15, 0.38, 0, 0, 0, 0.24); [[0x111827, -0.12], [0x111827, 0.12]].forEach(([c, dx]) => T.add('g', sph(8), c, dx, 1.2, 0.6, 0, 0, 0, 0.05)); for (let k = 0; k < 4; k++) T.add('m', rbox(0.12, 0.12, 0.12, 0.02), k % 2 ? 0x111827 : 0xfde047, -0.18 + (k % 2) * 0.36, 0.78, -0.2 + ((k / 2) | 0) * 0.4); T.add('g', capsule(12), 0xef4444, 0, 0.45, -0.95, PI / 2, 0, 0, 0.18, 0.4, 0.18);
-    sign3d(w, 'CRASH TEST BUDDY', 54.6, F + 0.42, 22.85, 0, 0.07, NAVY, null); w.add('g', rbox(1.6, 1.2, 0.3, 0.12), 0xff8a3d, 54.6, 0.65, 20.7); for (let k = 0; k < 3; k++) w.add('g', rbox(1.5, 0.12, 0.32, 0.04), 0xffffff, 54.6, 0.3 + k * 0.4, 20.7); }
+  { const T = w.tf(59.4, F, 22.0, 0); T.slab('x', 0x94a3b8, 0, 0, 0, 1.2, 0.3, 1.6, 0.06); T.add('g', sph(16), 0xfde047, 0, 0.75, 0, 0, 0, 0, 0.35, 0.3, 0.45); T.add('g', sph(14), 0xfde047, 0, 1.15, 0.38, 0, 0, 0, 0.24); [[0x111827, -0.12], [0x111827, 0.12]].forEach(([c, dx]) => T.add('g', sph(8), c, dx, 1.2, 0.6, 0, 0, 0, 0.05)); for (let k = 0; k < 4; k++) T.add('m', rbox(0.12, 0.12, 0.12, 0.02), k % 2 ? 0x111827 : 0xfde047, -0.18 + (k % 2) * 0.36, 0.78, -0.2 + ((k / 2) | 0) * 0.4); T.add('g', capsule(12), 0xef4444, 0, 0.45, -0.95, PI / 2, 0, 0, 0.18, 0.4, 0.18);
+    sign3d(w, 'CRASH TEST BUDDY', 59.4, F + 0.42, 22.85, 0, 0.07, NAVY, null); w.add('g', rbox(1.6, 1.2, 0.3, 0.12), 0xff8a3d, 59.4, 0.65, 20.7); for (let k = 0; k < 3; k++) w.add('g', rbox(1.5, 0.12, 0.32, 0.04), 0xffffff, 59.4, 0.3 + k * 0.4, 20.7); w.solid(58.8, 0, 20.4, 60.0, 1.3, 22.8, { cam: false }); }
   // jetpack test rig: frame + harness + nozzles
   { const x = 62.2, z = 21.6; [-1, 1].forEach((s) => w.add('x', cyl(10), 0x64748b, x + s * 0.8, F, z, 0, 0, 0, 0.05, 2.6, 0.05)); w.add('x', rbox(1.8, 0.1, 0.1, 0.03), 0x64748b, x, 2.65, z); w.add('x', cyl(6), 0x94a3b8, x, 1.8, z, 0, 0, 0, 0.01, 0.85, 0.01); w.add('g', rbox(0.6, 0.7, 0.32, 0.1), CHEESE, x, 1.55, z); [-1, 1].forEach((s) => { w.add('g', rcyl(0.13, 0.5, 0.04, 16), 0xe5e7eb, x + s * 0.22, 1.25, z - 0.2); w.add('l', cone(12), 0xff5d2a, x + s * 0.22, 0.92, z - 0.2, PI, 0, 0, 0.1, 0.32, 0.1, 1.0); }); w.solid(x - 0.9, 0, z - 0.3, x + 0.9, 2.7, z + 0.3, { cam: false }); sign3d(w, 'JET-PUP V2', x, F + 0.4, z + 0.35, 0, 0.08, PINK, null); }
-  K.labBench(w, 61.6, 26.6, PI, 4.0); K.stool(w, 60.6, 25.6, PINK); K.stool(w, 62.6, 25.6, TEAL);
-  { const T = w.tf(61.6, 0.95, 26.6, PI); K.monitor(w, T, -1.2, 0, 0.2, 0, 0x4ade80); for (let i = 0; i < 4; i++) T.add(i % 2 ? 'x' : 'g', [sph(10), gear(8), capsule(8), rbox(0.2, 0.12, 0.14, 0.03)][i], BR[i * 2], -0.3 + i * 0.4, 0.08, 0, 0, i, 0, i === 3 ? 1 : 0.1, i === 3 ? 1 : 0.1, i === 3 ? 1 : 0.1); }
-  I({ kind: 'rf2clue', id: 'lab', x: 61.0, y: F, z: 25.4, r: 1.3, label: '🔍 Read the Key-Finder 3000 test log' });
+  K.labBench(w, 61.6, 27.3, PI, 3.6); K.stool(w, 60.8, 26.3, PINK); K.stool(w, 62.4, 26.3, TEAL);
+  { const T = w.tf(61.6, 0.95, 27.3, PI); K.monitor(w, T, -1.2, 0, 0.2, 0, 0x4ade80); for (let i = 0; i < 4; i++) T.add(i % 2 ? 'x' : 'g', [sph(10), gear(8), capsule(8), rbox(0.2, 0.12, 0.14, 0.03)][i], BR[i * 2], -0.3 + i * 0.4, 0.08, 0, 0, i, 0, i === 3 ? 1 : 0.1, i === 3 ? 1 : 0.1, i === 3 ? 1 : 0.1); }
+  I({ kind: 'rf2clue', id: 'lab', x: 61.0, y: F, z: 26.0, r: 1.3, label: '🔍 Read the Key-Finder 3000 test log' });
   // goggles rack + safety sign + whiteboard of equations
   { const T = w.tf(53.42, 1.6, 26.2, PI / 2); T.add('m', rbox(1.6, 0.9, 0.05, 0.03), 0xffffff, 0, 0, 0); for (let i = 0; i < 4; i++) { T.add('x', torus(0.03, 16), 0x334155, -0.55 + i * 0.37, 0.1, 0.08, 0, 0, 0, 0.13); T.add('e', sph(12), [0x7dd3fc, 0xf9a8d4, 0xfde68a, 0x86efac][i], -0.55 + i * 0.37, 0.1, 0.1, 0, 0, 0, 0.11, 0.08, 0.04); } }
   sign3d(w, 'DAYS WITHOUT AN EXPLOSION: 0', 58.6, 3.85, 20.42, 0, 0.12, 0xef4444, 0xffffff);
-  K.whiteboard(w, 'x', 27.85, 56.2, 1.2, 2.4, -1); K.serverRack(w, 63.4, 22.6, -PI / 2); K.plant(w, 53.9, 27.4, 1.0);
-  drone(w, 56.0, 3.5, 25.0, TEAL, 4.4); drone(w, 61.5, 3.6, 24.0, PINK, 4.4);
-  gearAt(w, 54.6, 1.55, 22.0);
-  w.lights.push({ x: 58.6, y: 3.3, z: 24, c: 0xe0f2fe, i: 10, d: 10 }); }
+  K.whiteboard(w, 'x', 27.85, 56.2, 1.2, 2.4, -1); K.serverRack(w, 64.9, 22.6, -PI / 2); K.plant(w, 53.9, 27.4, 1.0);
+  drone(w, 54.4, 3.95, 26.9, TEAL, 4.4); drone(w, 64.6, 3.95, 26.9, PINK, 4.4);
+  gearAt(w, 59.4, 1.55, 22.0);
+  w.lights.push({ x: 59.4, y: 3.3, z: 24, c: 0xe0f2fe, i: 10, d: 10 }); }
 // ---------------- BREAK ROOM: kitchenette, snack machine (quest), tables, couch + TV, ping-pong
 function breakRoom(w) { const I = w.I;
   // kitchenette along the north wall
@@ -128,17 +132,17 @@ function breakRoom(w) { const I = w.I;
   K.hh('fridge', w, 71.8, 21.1, 0.15, 0, 13, 0xfde7f3);
   I({ kind: 'rf2clue', id: 'fridge', x: 71.6, y: F, z: 22.6, r: 1.2, label: '🔍 Read the note on the fridge' });
   // snack machine (the keys are stuck in spiral B4)
-  K.vending(w, 64.9, 22.3, PI / 2, TEAL); sign3d(w, 'SNACKS', 65.35, 2.5, 22.3, PI / 2, 0.12, 0xffffff, null);
-  I({ kind: 'rf2snack', x: 66.0, y: F, z: 22.3, r: 1.3, label: '🍪 Use the snack machine' });
+  K.vending(w, 66.4, 22.3, PI / 2, TEAL); sign3d(w, 'SNACKS', 66.85, 2.5, 22.3, PI / 2, 0.12, 0xffffff, null);
+  I({ kind: 'rf2snack', x: 67.5, y: F, z: 22.3, r: 1.3, label: '🍪 Use the snack machine' });
   // tables + bistro chairs, couch + TV, ping-pong table
   const tbl = (x, z, c) => { K.tableR(w, x, z, 0.55, 0.78, 0xffffff, 0x334155); w.add('g', torus(0.08, 32), c, x, 0.73, z, PI / 2, 0, 0, 0.55, 0.55, 0.4); [0, 1, 2].forEach((k) => { const a = k / 3 * PI * 2 + 0.6; bistro(w, x + Math.cos(a) * 0.9, z + Math.sin(a) * 0.9, Math.atan2(-Math.cos(a), -Math.sin(a)), c); }); K.hhY('mug', w, x + 0.15, 0.8, z, 0.1, 0, c); w.add('g', wedge(), CHEESE, x - 0.15, 0.84, z + 0.1, 0, 0.6, 0, 0.07); };
-  tbl(66.8, 24.6, PINK); tbl(70.2, 26.2, TEAL);
+  tbl(68.0, 24.6, PINK); tbl(70.2, 26.2, TEAL);
   { const T = w.tf(71.2, F, 24.0, 0); T.slab('g', 0x16a34a, 0, 0.7, 0, 1.4, 0.06, 2.4, 0.03, { cam: false }); T.box('x', 0xffffff, 0, 0.76, 0, 1.42, 0.005, 0.03, 0.002); T.box('m', 0xffffff, 0, 0.76, 0, 1.5, 0.15, 0.02, 0.01); [-1, 1].forEach((a) => [-1, 1].forEach((b) => T.add('x', cyl(8), 0x334155, a * 0.6, 0, b * 1.05, 0, 0, 0, 0.03, 0.7, 0.03))); T.add('g', rcyl(0.09, 0.02, 0.01, 14), 0xef4444, -0.3, 0.77, -0.6); T.add('g', rcyl(0.09, 0.02, 0.01, 14), 0x3b82f6, 0.3, 0.77, 0.6); T.add('g', sph(8), 0xffffff, 0.1, 0.8, 0.2, 0, 0, 0, 0.03); }
-  K.sofa(w, 66.2, 27.0, PI, 0xff8a3d, 0xffd2a8);
-  { const x = 64.3, z = 26.2; w.add('g', rbox(0.08, 1.0, 1.7, 0.04), 0x111827, x, 2.1, z); w.add('l', rbox(0.02, 0.86, 1.56, 0.02), 0x60a5fa, x + 0.05, 2.1, z, 0, 0, 0, 1, 1, 1, 0.5); w.add('g', sph(14), 0xa9afbd, x + 0.07, 2.15, z, 0, 0, 0, 0.02, 0.22, 0.22); }
+  K.sofa(w, 66.5, 27.2, PI, 0xff8a3d, 0xffd2a8);
+  { const x = 65.75, z = 25.4; w.add('g', rbox(0.08, 1.0, 1.7, 0.04), 0x111827, x, 2.1, z); w.add('l', rbox(0.02, 0.86, 1.56, 0.02), 0x60a5fa, x + 0.05, 2.1, z, 0, 0, 0, 1, 1, 1, 0.5); w.add('g', sph(14), 0xa9afbd, x + 0.07, 2.15, z, 0, 0, 0, 0.02, 0.22, 0.22); }
   sign3d(w, 'BREAK ROOM', 68.9, 3.4, 27.86, PI, 0.15, PINK, null); frameArt(w, 72.62, 2.4, 25.0, -PI / 2, 1.2, 0.9, 0xfef3c7, wedge());
-  K.plant(w, 72.2, 27.4, 1.0); K.hh('lamp', w, 64.6, 27.4, 0.14, 0, 16, 0xffe4b5);
-  gearAt(w, 66.8, 0.9, 24.6);
+  K.plant(w, 72.2, 27.4, 1.0); K.hh('lamp', w, 66.1, 27.4, 0.14, 0, 16, 0xffe4b5);
+  gearAt(w, 68.0, 0.9, 24.6);
   w.lights.push({ x: 68.4, y: 3.3, z: 24, c: 0xffe8c2, i: 10, d: 10 }); }
 // ------------------------------------------------------------------------------------------------ rooftop
 function roofShell(w) { // deck, glass railing, elevator kiosk, the giant rat-head logo, AC units (always visible from the street)

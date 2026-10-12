@@ -1,15 +1,15 @@
 // Grok Pup Town - boot, app state, main loop.
-import { E, initEngine, render, trackFps } from './engine.js?v=20261011r38e';
-import { initMats } from './mats.js?v=20261011r38e';
-import { initInput, clearEdges, edge, IN } from './input.js?v=20261011r38e';
-import { initAudio, setSound, sfx } from './audio.js?v=20261011r38e';
-import { S, persist } from './save.js?v=20261011r38e';
-import { HUD } from './hud.js?v=20261011r38e';
-import { UI, closePanel } from './ui.js?v=20261011r38e';
-import { Net } from './net.js?v=20261011r38e';
-import { Game } from './game.js?v=20261011r38e';
-import { $ } from './util.js?v=20261011r38e';
-import { loadFont } from './text3d.js?v=20261011r38e';
+import { E, initEngine, render, trackFps } from './engine.js?v=20261011r38f';
+import { initMats } from './mats.js?v=20261011r38f';
+import { initInput, clearEdges, edge, IN } from './input.js?v=20261011r38f';
+import { initAudio, setSound, sfx } from './audio.js?v=20261011r38f';
+import { S, persist } from './save.js?v=20261011r38f';
+import { HUD } from './hud.js?v=20261011r38f';
+import { UI, closePanel } from './ui.js?v=20261011r38f';
+import { Net } from './net.js?v=20261011r38f';
+import { Game } from './game.js?v=20261011r38f';
+import { $ } from './util.js?v=20261011r38f';
+import { loadFont } from './text3d.js?v=20261011r38f';
 const app = window.__pt = window.__hq = { state: 'boot', paused: true, game: null, ready: false, busy: false, simSpeed: 1 };
 function setLoad(p, t) { const b = $('loadBar'); if (b) b.style.width = p + '%'; if (t) $('loadTxt').textContent = t; }
 async function boot() {

@@ -3,13 +3,13 @@
 // Pup Town with commentary, the occasional cartoony bumpy landing (1 in 4, never on your first tour), dizzy stars,
 // and the Ratita tow-drone that brings the heli home. Co-op: the tour start is broadcast and everyone near the pad rides.
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js?v=20261011r38e';
-import { P } from './geo.js?v=20261011r38e';
-import { rcyl, star } from './shapes.js?v=20261011r38e';
-import { persist } from './save.js?v=20261011r38e';
-import { panel, closePanel } from './ui.js?v=20261011r38e';
-import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38e';
-import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38e';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38f';
+import { P } from './geo.js?v=20261011r38f';
+import { rcyl, star } from './shapes.js?v=20261011r38f';
+import { persist } from './save.js?v=20261011r38f';
+import { panel, closePanel } from './ui.js?v=20261011r38f';
+import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38f';
+import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38f';
 const PI = Math.PI, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const smooth = (t) => t * t * (3 - 2 * t);
@@ -93,7 +93,7 @@ export class Floor2 {
     if (o.kind === 'relev') return this.elevPanel(o.id);
     if (o.kind === 'rf2clue') { if ((f.q | 0) < 1) { g.toastMsg(({ desk: '📝 A sticky note… about keys? Snowie on the roof might know more.', lab: '🧪 A test log for a Key-Finder 3000. Interesting!', fridge: '🧊 A grumpy note about the snack machine.' })[o.id]); return; } const nw = !f.clues[o.id]; f.clues[o.id] = 1; persist(); const c = f2ClueText(o.id); g.app.ui.clue('f2' + o.id, c.t + ': ' + c.b, nw);
       if ((f.q | 0) === 1 && F2_CLUES.every((k) => f.clues[k])) { f.q = 2; persist(); setTimeout(() => { g.toastMsg('💡 Pi-rat → Key-Finder → break room → snack machine… The keys are stuck in spiral B4!'); g.sfx('check'); }, 700); } g.hud.dirty = true; return; }
-    if (o.kind === 'rf2snack') { if ((f.q | 0) === 2) { f.q = 3; persist(); g.sfx('cheese'); g.fx.burst(66.0, F2Y + 1.5, 22.3, 0xffd23f, 16, 4); g.toastMsg('🔑 Clunk… jingle! The HELI KEYS drop out (with a Cheddar Crunch). Take them to Snowie on the roof!'); g.hud.dirty = true; return; }
+    if (o.kind === 'rf2snack') { if ((f.q | 0) === 2) { f.q = 3; persist(); g.sfx('cheese'); g.fx.burst(67.5, F2Y + 1.5, 22.3, 0xffd23f, 16, 4); g.toastMsg('🔑 Clunk… jingle! The HELI KEYS drop out (with a Cheddar Crunch). Take them to Snowie on the roof!'); g.hud.dirty = true; return; }
       g.sfx('pop'); g.toastMsg(['🍪 Clunk! A Cheddar Crunch. Crunchy!', '🧃 A cheese smoothie box pops out. Slurp!', '🍪 Spiral B4 is empty now. A bit sad, but tidy.'][(Math.random() * 3) | 0]); return; }
     if (o.kind === 'rf2scope') return this.lookScope(o.id);
     if (o.kind === 'rf2heli') { if (this.heliAt === 'crash') { this.rideTow = true; g.toastMsg('🛸 Hop in! The tow-drone will fly you home.'); return; } if ((f.q | 0) < 4) { g.toastMsg((f.q | 0) === 3 ? '🔑 Give the keys to Snowie first! She\'s by the Heli Tours booth.' : '🔑 No keys, no flying! Snowie lost the heli keys. Talk to her by the booth.'); return; } this.startTour(); } }

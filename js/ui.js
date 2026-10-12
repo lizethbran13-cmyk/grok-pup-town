@@ -1,11 +1,11 @@
 // Menus & panels: title, pause, journal, dialog, clue cards, finale, town map, Style Station, mini-game launcher.
-import { $, esc } from './util.js?v=20261011r38e';
-import { S, persist, resetSave } from './save.js?v=20261011r38e';
-import { sfx, setSound } from './audio.js?v=20261011r38e';
-import { HATS, BADGES, BONE_CLUES, SUSPECTS, clueText, boneStep, sideTasks, hint } from './story.js?v=20261011r38e';
-import { REGIONS, DOORS } from './town.js?v=20261011r38e';
-import { SKINS, HAIRS, HAIR_COLS, SHIRTS, PANTS, cleanLook } from './humans.js?v=20261011r38e';
-import * as MG from './minigames.js?v=20261011r38e';
+import { $, esc } from './util.js?v=20261011r38f';
+import { S, persist, resetSave } from './save.js?v=20261011r38f';
+import { sfx, setSound } from './audio.js?v=20261011r38f';
+import { HATS, BADGES, BONE_CLUES, SUSPECTS, clueText, boneStep, sideTasks, hint } from './story.js?v=20261011r38f';
+import { REGIONS, DOORS } from './town.js?v=20261011r38f';
+import { SKINS, HAIRS, HAIR_COLS, SHIRTS, PANTS, cleanLook } from './humans.js?v=20261011r38f';
+import * as MG from './minigames.js?v=20261011r38f';
 const hex = (c) => '#' + c.toString(16).padStart(6, '0');
 export function panel(html, mount, cls = '') { const ui = $('ui'); { const t = $('toast'); if (t && !ui.classList.contains('open')) { t.innerHTML = ''; t.classList.add('low'); } } /* menus open with a clean screen (no reward pills over their header) */ ui.innerHTML = `<div class="panel ${cls}">${html}</div>`; ui.classList.add('open'); if (mount) mount(ui.firstChild); return ui.firstChild; }
 export function closePanel() { const ui = $('ui'); ui.innerHTML = ''; ui.classList.remove('open'); const t = $('toast'); if (t && !t.children.length) t.classList.remove('low'); }
