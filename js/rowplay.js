@@ -2,14 +2,14 @@
 // mystery (clues, runaway Sweepy, the ribbon cutting), the Turbo Test Track + Squeak Zapper Range (3D), the Gadget Store
 // gadgets, region culling for the district and co-op DLC sharing (the host's copy unlocks it for guests).
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js?v=20261011r38f';
-import { P } from './geo.js?v=20261011r38f';
-import { rcyl, sph, torus, gear, capsule, cone, wedge } from './shapes.js?v=20261011r38f';
-import { S, persist } from './save.js?v=20261011r38f';
-import { inView } from './perf.js?v=20261011r38f';
-import { inRow, trackPt, TRACK } from './row.js?v=20261011r38f';
-import { Floor2 } from './floor2.js?v=20261011r38f';
-import { R, ownsRow, coins, ROW_BADGES, ROW_CLUES, rowClueText, shopItem, SHOP, DLC_NAME } from './rowdata.js?v=20261011r38f';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38g';
+import { P } from './geo.js?v=20261011r38g';
+import { rcyl, sph, torus, gear, capsule, cone, wedge } from './shapes.js?v=20261011r38g';
+import { S, persist } from './save.js?v=20261011r38g';
+import { inView } from './perf.js?v=20261011r38g';
+import { inRow, trackPt, TRACK } from './row.js?v=20261011r38g';
+import { Floor2 } from './floor2.js?v=20261011r38g';
+import { R, ownsRow, coins, ROW_BADGES, ROW_CLUES, rowClueText, shopItem, SHOP, DLC_NAME } from './rowdata.js?v=20261011r38g';
 const PI = Math.PI;
 const PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 export const TRACK_GOLD = 30, TRACK_SILVER = 36, TRACK_BRONZE = 45;

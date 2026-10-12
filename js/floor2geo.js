@@ -3,8 +3,8 @@
 // break room. Rooftop (y 11.2): Snowie's Sky Tours helipad, telescopes over Pup Town, garden, deck chairs, the rat logo.
 // Everything is authored at floor level and lifted with w.oy, so every prop helper works unchanged.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38f';
-import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38f';
+import * as K from './kit.js?v=20261011r38g';
+import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38g';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, wedge, gear, tree, bush, pick, D, G } = K;
 const PI = Math.PI, F = 0.05, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const F2Y = 6.4, F2H = 4.8, ROOFY = F2Y + F2H; // floor 2 base, storey height, roof deck
@@ -138,7 +138,7 @@ function breakRoom(w) { const I = w.I;
   const tbl = (x, z, c) => { K.tableR(w, x, z, 0.55, 0.78, 0xffffff, 0x334155); w.add('g', torus(0.08, 32), c, x, 0.73, z, PI / 2, 0, 0, 0.55, 0.55, 0.4); [0, 1, 2].forEach((k) => { const a = k / 3 * PI * 2 + 0.6; bistro(w, x + Math.cos(a) * 0.9, z + Math.sin(a) * 0.9, Math.atan2(-Math.cos(a), -Math.sin(a)), c); }); K.hhY('mug', w, x + 0.15, 0.8, z, 0.1, 0, c); w.add('g', wedge(), CHEESE, x - 0.15, 0.84, z + 0.1, 0, 0.6, 0, 0.07); };
   tbl(68.0, 24.6, PINK); tbl(70.2, 26.2, TEAL);
   { const T = w.tf(71.2, F, 24.0, 0); T.slab('g', 0x16a34a, 0, 0.7, 0, 1.4, 0.06, 2.4, 0.03, { cam: false }); T.box('x', 0xffffff, 0, 0.76, 0, 1.42, 0.005, 0.03, 0.002); T.box('m', 0xffffff, 0, 0.76, 0, 1.5, 0.15, 0.02, 0.01); [-1, 1].forEach((a) => [-1, 1].forEach((b) => T.add('x', cyl(8), 0x334155, a * 0.6, 0, b * 1.05, 0, 0, 0, 0.03, 0.7, 0.03))); T.add('g', rcyl(0.09, 0.02, 0.01, 14), 0xef4444, -0.3, 0.77, -0.6); T.add('g', rcyl(0.09, 0.02, 0.01, 14), 0x3b82f6, 0.3, 0.77, 0.6); T.add('g', sph(8), 0xffffff, 0.1, 0.8, 0.2, 0, 0, 0, 0.03); }
-  K.sofa(w, 66.5, 27.2, PI, 0xff8a3d, 0xffd2a8);
+  K.sofa(w, 66.1, 27.2, PI, 0xff8a3d, 0xffd2a8);
   { const x = 65.75, z = 25.4; w.add('g', rbox(0.08, 1.0, 1.7, 0.04), 0x111827, x, 2.1, z); w.add('l', rbox(0.02, 0.86, 1.56, 0.02), 0x60a5fa, x + 0.05, 2.1, z, 0, 0, 0, 1, 1, 1, 0.5); w.add('g', sph(14), 0xa9afbd, x + 0.07, 2.15, z, 0, 0, 0, 0.02, 0.22, 0.22); }
   sign3d(w, 'BREAK ROOM', 68.9, 3.4, 27.86, PI, 0.15, PINK, null); frameArt(w, 72.62, 2.4, 25.0, -PI / 2, 1.2, 0.9, 0xfef3c7, wedge());
   K.plant(w, 72.2, 27.4, 1.0); K.hh('lamp', w, 66.1, 27.4, 0.14, 0, 16, 0xffe4b5);

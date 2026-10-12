@@ -4,9 +4,9 @@
 // Culling: the district's outdoors live in region 'row' (drawn only once you're east of the park), a light far-only LOD
 // ('rowFar') stands in from town, and every interior is its own region like the rest of Pup Town.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38f';
-import { building, gable, REGIONS, DOORS, AREAS } from './town.js?v=20261011r38f';
-import { buildFloor2, F2_REGIONS } from './floor2geo.js?v=20261011r38f';
+import * as K from './kit.js?v=20261011r38g';
+import { building, gable, REGIONS, DOORS, AREAS } from './town.js?v=20261011r38g';
+import { buildFloor2, F2_REGIONS } from './floor2geo.js?v=20261011r38g';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, blobGeo, pick, wedge, gear, tree, bush, lampPost, bench, flowerBed, fenceRun, D, G } = K;
 const R = K.R, PI = Math.PI, F = 0.05;
 const PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];

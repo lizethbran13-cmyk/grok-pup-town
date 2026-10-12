@@ -1,10 +1,10 @@
 // RATITA ROW panels (Ratita Super Expansion DLC): Cheese-Tech Barista + Circuit Fixer (2D mini-games), the Gadget Store,
 // the locked-gate card and the Grand Opening finale. Installed onto the UI instance by the game.
-import { S, persist } from './save.js?v=20261011r38f';
-import { sfx } from './audio.js?v=20261011r38f';
-import { esc } from './util.js?v=20261011r38f';
-import { panel, closePanel } from './ui.js?v=20261011r38f';
-import { R, coins, SHOP, ARCADE_URL, DLC_NAME, ROW_BADGES, ROW_BADGE_HOW, ROW_CLUES, rowClueText, rowStep, CLUE_HINT, F2, F2_CLUES, f2ClueText, f2Step } from './rowdata.js?v=20261011r38f';
+import { S, persist } from './save.js?v=20261011r38g';
+import { sfx } from './audio.js?v=20261011r38g';
+import { esc } from './util.js?v=20261011r38g';
+import { panel, closePanel } from './ui.js?v=20261011r38g';
+import { R, coins, SHOP, ARCADE_URL, DLC_NAME, ROW_BADGES, ROW_BADGE_HOW, ROW_CLUES, rowClueText, rowStep, CLUE_HINT, F2, F2_CLUES, f2ClueText, f2Step } from './rowdata.js?v=20261011r38g';
 const $q = (c, s) => c.querySelector(s);
 const on = (c, sel, f) => { const e = c.querySelector(sel); if (e) e.onclick = (ev) => { ev.stopPropagation(); sfx('click'); f(ev); }; };
 function loop(cv, f) { let lt = performance.now(), alive = true; const tick = () => { if (!alive || !cv.isConnected) return; requestAnimationFrame(tick); const n = performance.now(); const dt = Math.min(0.05, (n - lt) / 1000); lt = n; f(dt); }; requestAnimationFrame(tick); return () => alive = false; }

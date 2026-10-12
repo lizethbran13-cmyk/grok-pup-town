@@ -1,7 +1,7 @@
 // RATITA SUPER EXPANSION (DLC #38, MEGA, unlock key grokDLC.puptown.ratita_super_expansion)
 // Ratita Industries opens its Pup Town branch: Ratita Row, a whole new district east of Paw Park.
 // Data only: ownership check, the district save, employees + what they say, the mystery, the Gadget Store and achievements.
-import { S, persist } from './save.js?v=20261011r38f';
+import { S, persist } from './save.js?v=20261011r38g';
 const PI = Math.PI;
 export const DLC_KEY = 'grokDLC.puptown.ratita_super_expansion';
 export const DLC_NAME = 'Ratita Super Expansion';
@@ -76,7 +76,7 @@ export const ROW_NPCS = [
   N('f2pirat', 'Pi-rat (Chief Inventor)', { rat: 'pirat', hat: 'pirate', extras: ['patch'] }, [62.5, 24.7, -PI * 0.6], 'r_f2', { y: 6.52 }),
   N('volt', 'Volt (Test Pilot Husky)', { b: 'husky', hat: 'helmet', hatC: 0x22d3ee, glasses: 0x22d3ee }, [56.8, 26.4, PI * 0.8], 'r_f2', { y: 6.52 }),
   N('f2torty', 'Martina "Torty" (Tortoise)', { martina: 1 }, [70.2, 22.6, PI * 0.75], 'r_f2', { y: 6.52 }),
-  N('muffin', 'Muffin (Snack Fan)', { b: 'dachshund', neck: 'scarf', neckC: 0xffc93c }, [66.5, 26.4, PI], 'r_f2', { y: 6.52, mode: 'sit' }),
+  N('muffin', 'Muffin (Snack Fan)', { b: 'dachshund', neck: 'scarf', neckC: 0xffc93c }, [66.1, 26.4, PI], 'r_f2', { y: 6.52, mode: 'sit' }),
   N('f2snowie', 'Snowie (Pilot · Head of Fun)', { rat: 'snowie', hat: 'flower', extras: ['bow'] }, [68.4, 34.8, PI * 0.85], 'r_roof', { y: 11.32 }),
   N('rotor', 'Rotor (Heli Mechanic)', { b: 'beagle', hat: 'cap', hatC: 0xff8a3d, neck: 'vest', neckC: 0xff8a3d }, [61.6, 26.6, PI / 2], 'r_roof', { y: 11.32 }),
   N('waffles', 'Waffles (Sightseer)', { b: 'pupcorgi', hat: 'beanie', hatC: 0x22d3ee }, [55.2, 36.2, -PI / 2], 'r_roof', { y: 11.32 }),
