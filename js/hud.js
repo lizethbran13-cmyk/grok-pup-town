@@ -2,7 +2,7 @@
 import { $, esc } from './util.js';
 import { S } from './save.js';
 import { boneStep } from './story.js';
-import { rowStep } from './rowdata.js';
+import { rowStep, F2 } from './rowdata.js';
 export class HUD {
   constructor() { this.dirty = true; this.toasts = $('toast'); }
   region(n) { const e = $('hArea'); if (e && e.textContent !== n) { e.textContent = n; e.classList.remove('pop'); void e.offsetWidth; e.classList.add('pop'); } }
@@ -15,9 +15,9 @@ export class HUD {
   setAct(a) { const b = $('tAct'); const k = a ? a.label : ''; if (k === this._ak) return; this._ak = k; if (a) { b.classList.remove('hidden'); b.textContent = a.label; } else b.classList.add('hidden'); }
   timer(t) { const e = $('hTimer'); if (e.textContent !== t) { e.textContent = t; e.classList.toggle('hidden', !t); } }
   throwMode(on) { const b = $('tBlast'); if (b) b.classList.toggle('big', !!on); }
-  update(dt, g) { const key = (g.row && g.row.inside() ? 'R' + g.row.stats().coins + g.row.stats().gears + g.row.stats().q : '') + g.biscGot.size + '|' + S.q.bone + '|' + Object.keys(S.clues).length + '|' + g.players.size + '|' + S.toys.length + '|' + S.plants.length;
+  update(dt, g) { const key = (g.row && g.row.inside() ? 'R' + g.row.stats().coins + g.row.stats().gears + g.row.stats().q + '|' + F2().q + F2().tours + g.region : '') + g.biscGot.size + '|' + S.q.bone + '|' + Object.keys(S.clues).length + '|' + g.players.size + '|' + S.toys.length + '|' + S.plants.length;
     if (key === this.key && !this.dirty) return; this.key = key; this.dirty = false;
     $('hGears').textContent = g.biscGot.size + '/' + g.world.gears.length; $('hKeys').innerHTML = S.toys.length && !S.flags.toys ? `<span class="chip">🦴 ${S.toys.length}/3</span>` : '';
-    const rp = g.row, inRowNow = rp && rp.owned() && rp.inside();     $('hGoal').textContent = inRowNow ? `🧀 ${rp.stats().coins} · ⚙️ ${rp.stats().gears}/${rp.stats().gearsAll} · ${rowStep()}` : (S.q.bone | 0) < 4 ? '🦴 ' + boneStep() : '⭐ Explore! Biscuits, secrets, mini-games and friends.';
+    const rp = g.row, inRowNow = rp && rp.owned() && rp.inside();     $('hGoal').textContent = inRowNow ? `🧀 ${rp.stats().coins} · ⚙️ ${rp.stats().gears}/${rp.stats().gearsAll} · ${rowStep(g.region)}` : (S.q.bone | 0) < 4 ? '🦴 ' + boneStep() : '⭐ Explore! Biscuits, secrets, mini-games and friends.';
     const ps = [...g.players.values()]; $('hPlayers').innerHTML = ps.length > 1 ? ps.map((p) => `<span>${esc(p.name)}</span>`).join('') : ''; }
 }

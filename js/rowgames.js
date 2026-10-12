@@ -4,7 +4,7 @@ import { S, persist } from './save.js';
 import { sfx } from './audio.js';
 import { esc } from './util.js';
 import { panel, closePanel } from './ui.js';
-import { R, coins, SHOP, ARCADE_URL, DLC_NAME, ROW_BADGES, ROW_BADGE_HOW, ROW_CLUES, rowClueText, rowStep, CLUE_HINT } from './rowdata.js';
+import { R, coins, SHOP, ARCADE_URL, DLC_NAME, ROW_BADGES, ROW_BADGE_HOW, ROW_CLUES, rowClueText, rowStep, CLUE_HINT, F2, F2_CLUES, f2ClueText, f2Step } from './rowdata.js';
 const $q = (c, s) => c.querySelector(s);
 const on = (c, sel, f) => { const e = c.querySelector(sel); if (e) e.onclick = (ev) => { ev.stopPropagation(); sfx('click'); f(ev); }; };
 function loop(cv, f) { let lt = performance.now(), alive = true; const tick = () => { if (!alive || !cv.isConnected) return; requestAnimationFrame(tick); const n = performance.now(); const dt = Math.min(0.05, (n - lt) / 1000); lt = n; f(dt); }; requestAnimationFrame(tick); return () => alive = false; }
@@ -76,7 +76,8 @@ export function rowUI(ui) { if (ui.rowShop) return;
   ui.rowFinale = function () { sfx('win'); panel(`<div class="fin"><h2>🎀 RATITA ROW IS OPEN!</h2><h3>Who took the Pup-Translator?</h3><p>${esc('It was SWEEPY, the robo-vacuum! Pi-rat upgraded it to "tidy up everything shiny", so it tidied the shiny Pup-Translator right off its stand and zoomed round the Test Track with it. Now the Translator is the star of the Museum of Inventions, and Luna cut the ribbon!')}</p><p class="rew">🎁 +50 Cheese Coins + Grand Opening Hero badge</p><button class="go" id="fOk">🎉 HOORAY!</button></div>`, (c) => on(c, '#fOk', () => this.done()), 'finP'); };
   ui.rowJournal = function (rp) { if (!rp || !rp.owned()) return `<h3>🐀 RATITA ROW <small>(${esc(DLC_NAME)} DLC)</small></h3><p class="sub">🔒 Unlock it in the Grok Arcade DLC Machine to explore Ratita Row.</p>`;
     const r = R(), q = r.q | 0, s = rp.stats(); const cl = ROW_CLUES.map((c) => `<li class="${r.clues[c] ? '' : 'dim'}">${r.clues[c] ? '🔍 ' + esc(rowClueText(c)) : '🔒 ' + (q === 1 ? esc(CLUE_HINT[c]) : 'Clue not found yet')}</li>`).join('');
-    return `<h3>${q >= 4 ? '✅' : q > 0 ? '🔎' : '❔'} RATITA ROW: THE MISSING PROTOTYPE</h3><p class="sub">${esc(rowStep())}</p><ul class="clues">${cl}</ul>
+    return `<h3>${q >= 4 ? '✅' : q > 0 ? '🔎' : '❔'} RATITA ROW: THE MISSING PROTOTYPE</h3><p class="sub">${esc(rowStep('main'))}</p><ul class="clues">${cl}</ul>
+      ${(() => { const f = F2(), fq = f.q | 0; return `<h3>${fq >= 4 ? '✅' : fq > 0 ? '🔎' : '❔'} FLOOR 2: THE MISSING HELI KEYS</h3><p class="sub">${esc(f2Step())}</p><ul class="clues">${F2_CLUES.map((c) => `<li class="${f.clues[c] ? '' : 'dim'}">${f.clues[c] ? '🔍 ' + esc(f2ClueText(c).t) : '🔒 ' + (fq === 1 ? 'Search ' + ({ desk: 'Luna\'s office', lab: 'the Gadget Testing Lab', fridge: 'the break room' })[c] : 'Clue not found yet')}</li>`).join('')}</ul>`; })()}
       <h3>⚙️ GOLDEN GEARS ${s.gears}/${s.gearsAll} · 🧀 ${s.coins} CHEESE COINS</h3><p class="sub">🏁 Track best: ${r.best.track ? r.best.track.toFixed(1) + ' s' : '-'} · 🎯 Range: ${r.best.range | 0} · 🧀 Cafe: ${r.best.cafe | 0}/3 · 🔧 Circuits: ${r.best.circuit | 0}</p>
       <div class="badges">${Object.entries(ROW_BADGES).map(([k, n]) => `<span class="${r.badges[k] ? 'on' : ''}" title="${esc(ROW_BADGE_HOW[k])}">${r.badges[k] ? esc(n) : '🔒 ' + esc(ROW_BADGE_HOW[k])}</span>`).join('')}</div>`; };
 }

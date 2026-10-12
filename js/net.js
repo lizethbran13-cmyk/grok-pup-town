@@ -55,6 +55,7 @@ export class Net {
     if (d.t === 'look' && host) { this.looks[from] = { name: GN.cleanName(d.name), look: cleanLook(d.look), outfit: String(d.outfit || 'none').slice(0, 12) }; this.room.broadcast({ t: 'looks', looks: this.looks }); this.applyLooks(); if (app.state !== 'play') this.roomPanel(); return; }
     if (d.t === 'looks' && !host) { this.looks = d.looks || {}; this.applyLooks(); if (app.state !== 'play') this.roomPanel(); return; }
     if (!g) return;
+    if (d.t === 'heli') { if (host) this.room.broadcast(d); if (g.row && g.row.f2) g.row.f2.onNet(d); return; }
     if (host) { if (d.t === 'p' && Array.isArray(d.s)) { const L = this.looks[from] || { name: 'Visitor' }; g.addRemote(from, L, this.slotOf(from)).applySnap(d.s); } }
     else { if (d.t === 's') { for (const pid in d.ps) { if (pid === this.room.pid) continue; const L = this.looks[pid] || { name: 'Visitor' }; g.addRemote(pid, L, this.slotOf(pid)).applySnap(d.ps[pid]); }
         for (const pid of [...g.players.keys()]) if (!g.players.get(pid).local && !d.ps[pid]) g.removeRemote(pid);

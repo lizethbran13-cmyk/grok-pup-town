@@ -8,6 +8,7 @@ import { rcyl, sph, torus, gear, capsule, cone, wedge } from './shapes.js';
 import { S, persist } from './save.js';
 import { inView } from './perf.js';
 import { inRow, trackPt, TRACK } from './row.js';
+import { Floor2 } from './floor2.js';
 import { R, ownsRow, coins, ROW_BADGES, ROW_CLUES, rowClueText, shopItem, SHOP, DLC_NAME } from './rowdata.js';
 const PI = Math.PI;
 const PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
@@ -40,16 +41,16 @@ export class RowPlay {
     // track marker ring
     this.ring = g.add(new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.1, 12, 40), new THREE.MeshBasicMaterial({ color: 0xff4fa0, toneMapped: false }))); this.ring.visible = false;
     this.ball = new THREE.Mesh(new THREE.SphereGeometry(0.13, 18, 12), new THREE.MeshStandardMaterial({ color: 0xc6f432, roughness: 0.7 }));
-    this.gearGot = new Set(R().gears); this.applyGadgets(); this.refresh(); }
+    this.gearGot = new Set(R().gears); this.applyGadgets(); this.refresh(); this.f2 = new Floor2(g, this); }
   owned() { return ownsRow() || !!this.g.rowShared; }
   // ------------------------------------------------ state-driven placement
   refresh() { const r = R(), q = r.q | 0, sp = this.sp, own = this.owned();
     this.fieldS.off = own; this.field.visible = this.lock.visible = !own;
     this.ribbon.visible = q < 4; this.trans.visible = q >= 2; this.sweepy.root.visible = q >= 2 || q < 2;
     if (q >= 4) { this.trans.position.set(...sp.museumPed); this.trans.position.y += 0.25; this.trans.scale.setScalar(1.3); } else this.trans.scale.setScalar(1);
-    if (q !== 2) { this.sweepy.root.position.set(59.4, 0.0, 16.0); this.sweepy.root.rotation.y = PI; } this.g.hud.dirty = true; }
+    if (q !== 2) { this.sweepy.root.position.set(59.4, 0.0, 16.0); this.sweepy.root.rotation.y = PI; } if (this.f2) this.f2.refresh(); this.g.hud.dirty = true; }
   applyGadgets() { const r = R(), me = this.g.me, own = this.owned(); for (const it of SHOP) if (it.kind === 'gadget') { if (own && r.items[it.id] && !r.off[it.id]) me.gadgets.add(it.id); else me.gadgets.delete(it.id); } }
-  vis(v) { const me = this.g.me; if (inRow(me.x, me.z) || (me.x > 30 && me.z > -14 && me.z < 84)) v.add('row'); else v.add('rowFar'); }
+  vis(v) { const me = this.g.me; if (inRow(me.x, me.z) || (me.x > 30 && me.z > -14 && me.z < 84)) v.add('row'); else v.add('rowFar'); const dO = Math.hypot(me.x - 63, me.z - 30); if (dO < 19 && (v.has('row') || v.has('out')) && me.y < 6) v.add('r_f2'); if (me.y > 9 && dO < 60) v.add('r_roof'); }
   inside() { return inRow(this.g.me.x, this.g.me.z); }
   // ------------------------------------------------ frame
   update(dt) { const g = this.g, me = g.me, T = g.T, r = R(), q = r.q | 0, inside = this.inside(), near = inside || me.x > 30;
@@ -73,14 +74,14 @@ export class RowPlay {
     if (q >= 4 && this.region() === 'row' && Math.random() < dt * 2.2) g.fx.confetti(75 + (Math.random() - 0.5) * 8, 6, 46.5 + (Math.random() - 0.5) * 6, 5);
     for (const p of g.players.values()) { const pr = p.rig.hat && p.rig.hat.getObjectByName('prop'); if (pr) pr.rotation.y += dt * (3 + Math.min(10, p.speed || 0) * 2.2); } // propeller caps spin faster when you run
     this._fc = (this._fc || 0) - dt; if (this._fc <= 0) { this._fc = 0.5; this.farCull(); }
-    this.updateTrack(dt); this.updateRange(dt); this.updateFlying(dt); }
+    this.updateTrack(dt); this.updateRange(dt); this.updateFlying(dt); this.f2.update(dt); }
   // deep inside Ratita Row the far side of town (park + square props, ~80 m+ away and behind the hedge) is skipped
-  farCull() { const g = this.g, me = g.me, deep = me.x > 52 && this.inside(), out = g.world.regionMeshes.out || [], on = g.vis && g.vis.has('out'); if (!deep && !this._culled) return; this._culled = deep;
+  farCull() { const g = this.g, me = g.me, deep = me.x > 52 && this.inside() && !g.ride && !g.camRide && g.region !== 'r_roof', out = g.world.regionMeshes.out || [], on = g.vis && g.vis.has('out'); if (!deep && !this._culled) return; this._culled = deep;
     for (const m of out) { if (!on) { m.visible = false; continue; } if (!deep) { m.visible = true; continue; } const s = m.geometry.boundingSphere; m.visible = Math.hypot(s.center.x - me.x, s.center.z - me.z) - s.radius < 62; } }
   region() { return this.inside() && this.g.region === 'out' ? 'row' : this.g.region; }
   collect() { const me = this.g.me, G = this.w.rowGears, g = this.g;
     for (let i = 0; i < G.length; i++) { if (this.gearGot.has(i)) continue; const p = G[i]; if (Math.abs(me.x - p[0]) < 0.85 && Math.abs(me.z - p[2]) < 0.85 && me.y + me.hgt + 0.3 > p[1] && me.y < p[1] + 0.7) { this.gearGot.add(i); const r = R(); r.gears = [...this.gearGot]; persist(); g.sfx('part'); g.fx.sparkle(p[0], p[1], p[2], 0xffd23f); g.fx.burst(p[0], p[1], p[2], 0xffd23f, 12, 4);
-      const n = this.gearGot.size; g.toastMsg(`⚙️ Golden Gear ${n}/${G.length} · +5 🧀`); coins(5, null); if (n >= G.length) { this.badge('rowGears'); coins(25, g, 'every Golden Gear!'); } g.hud.dirty = true; } } }
+      const n = this.gearGot.size; g.toastMsg(`⚙️ Golden Gear ${n}/${G.length} · +5 🧀`); coins(5, null); if (n >= G.length) { this.badge('rowGears'); coins(25, g, 'every Golden Gear!'); } this.f2.gearCheck(this.gearGot); g.hud.dirty = true; } } }
   badge(id) { const r = R(); if (r.badges[id]) return; r.badges[id] = 1; S.badges['row_' + id] = 1; persist(); this.g.toastMsg('🏅 Badge: ' + ROW_BADGES[id]); this.g.sfx('win'); }
   // ------------------------------------------------ the mystery
   addClue(id) { const r = R(); if ((r.q | 0) < 1) { this.g.toastMsg('🤔 Hmm, something is odd here… Luna in the Branch Office might know more.'); return; } const nw = !r.clues[id]; r.clues[id] = 1; persist(); this.g.app.ui.clue(id, rowClueText(id), nw);
@@ -93,12 +94,14 @@ export class RowPlay {
   label(o) { const own = this.owned(), q = R().q | 0;
     if (this.track || this.range) return o && o.kind === 'rmg' && o.id === (this.track ? 'track' : 'range') ? Object.assign({}, o, { label: '✖ Stop' }) : null;
     if (!o) return o;
+    if (o.kind === 'relev' || o.kind.startsWith('rf2')) return this.f2.label(o);
     if (o.kind === 'rgate') return own ? null : o;
     if (o.kind === 'rzip' && o.id === 'town' && !own) return Object.assign({}, o, { label: '🔒 Zip-Pad to Ratita Row (DLC)' });
     if (o.kind === 'rclue' && (q < 1 || R().clues[o.id])) return q < 1 ? null : Object.assign({}, o, { label: o.label.replace(/^\S+/, '✅') });
     return o; }
   act(o) { const g = this.g, ui = g.app.ui, r = R();
     if (o.kind === 'rgate') { ui.rowLocked(); return; }
+    if (o.kind === 'relev' || o.kind.startsWith('rf2')) { this.f2.act(o); return; }
     if (o.kind === 'rzip') { if (!this.owned()) { ui.rowLocked(); return; } const to = o.id === 'town' ? [80.4, 0.3, 48.6, PI] : [-8.8, 0.3, 13.4, 0]; g.sfx('glide'); g.fx.ring(g.me.x, g.me.y + 0.2, g.me.z, 0x3ff0ff, 2, 0.5);
       ui.fade(() => { g.me.place([to[0], to[1], to[2]], to[3]); g.cam.snap = true; g.cam.yaw = to[3]; g.fx.ring(to[0], 0.3, to[2], 0xff4fa0, 2, 0.5); }); if (!r.zip) { r.zip = 1; persist(); this.badge('rowZip'); } g.toastMsg(o.id === 'town' ? '🌀 ZAP! Welcome to Ratita Row!' : '🌀 ZAP! Back to the Town Square.'); return; }
     if (o.kind === 'rclue') { this.addClue(o.id); return; }

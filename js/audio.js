@@ -42,6 +42,8 @@ export function sfx(name) {
     case 'buy': [784, 1046, 1318].forEach((f, i) => tone(f, 0.12, 'square', 0.14, 0, i * 0.07)); break;
     case 'deny': tone(200, 0.2, 'square', 0.12, -60); break;
     case 'honk': tone(330, 0.22, 'square', 0.16, -20); tone(415, 0.22, 'square', 0.12, -20); tone(330, 0.22, 'square', 0.16, -20, 0.28); tone(415, 0.22, 'square', 0.12, -20, 0.28); break;
+    case 'ding': tone(1568, 0.5, 'sine', 0.22, 0, 0); tone(1175, 0.8, 'sine', 0.22, 0, 0.28); break;
+    case 'sputter': for (let i = 0; i < 4; i++) { noise(0.07, 0.16, 300 + i * 80, i * 0.11); tone(90 + Math.random() * 40, 0.06, 'square', 0.08, -30, i * 0.11); } break;
     case 'bell': [1318, 1046, 1318, 1046].forEach((f, i) => tone(f, 0.35, 'triangle', 0.18, 0, i * 0.22)); break;
     case 'tune': [523, 659, 784, 659, 880, 784, 659, 523].forEach((f, i) => tone(f, 0.16, 'square', 0.12, 0, i * 0.14)); break;
     case 'hit': tone(700, 0.08, 'square', 0.12, -400); break;

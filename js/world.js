@@ -30,13 +30,14 @@ export class World {
     this.def = def || {}; this.group = new THREE.Group(); this.chunks = new Map(); this.solids = []; this.dyn = []; this.zones = []; this.grid = new Map(); this.stamp = 0;
     this.ents = []; this.hooks = []; this.checkpoints = []; this.doors = []; this.plates = []; this.levers = []; this.movers = []; this.enemies = []; this.lights = []; this.anims = []; this.killY = -6; this.route = [];
     this.tris = 0; this.drawCalls = 0; this.fades = []; this._fg = null; this.region = 'shell'; this.detail = false; this.regionMeshes = {}; this.detailMeshes = [];
+    this.oy = 0; // vertical build offset: upper storeys reuse every floor-level prop helper unchanged
   }
   // props built between fadeBegin/fadeEnd become their own small meshes that hide while they block the camera's view of your rat
   fadeBegin() { this._fg = { id: this.fades.length, box: new THREE.Box3(), meshes: [] }; this.fades.push(this._fg); }
   fadeEnd() { this._fg = null; }
   // ---- visuals ----
   _part(bucket, geom, color, m, em = 0) {
-    const g0 = prep(geom); const g = g0.clone(); g.applyMatrix4(m);
+    const g0 = prep(geom); const g = g0.clone(); g.applyMatrix4(m); if (this.oy) g.translate(0, this.oy, 0);
     const n = g.attributes.position.count, a = new Float32Array(n * 3); _c.set(color); const k = em ? 1 + em : 1;
     for (let i = 0; i < n; i++) { a[i * 3] = _c.r * k; a[i * 3 + 1] = _c.g * k; a[i * 3 + 2] = _c.b * k; }
     g.setAttribute('color', new THREE.BufferAttribute(a, 3));
@@ -62,7 +63,7 @@ export class World {
   // world-space rounded slab with collider; x,z centre, y bottom
   slab(bucket, col, x, y, z, w, h, d, r = 0.1, o, em = 0, seg = 2) { if (r < 0.03) seg = 1; this.add(bucket, rbox(w, h, d, r, seg), col, x, y + h / 2, z, 0, 0, 0, 1, 1, 1, em); return o === false ? null : this.solid(x - w / 2, y, z - d / 2, x + w / 2, y + h, z + d / 2, o); }
   // ---- colliders ----
-  solid(x0, y0, z0, x1, y1, z1, o) {
+  solid(x0, y0, z0, x1, y1, z1, o) { if (this.oy) { y0 += this.oy; y1 += this.oy; }
     const s = Object.assign({ min: [x0, y0, z0], max: [x1, y1, z1] }, o || {});
     if (s.dyn) { s.dx = s.dy = s.dz = 0; this.dyn.push(s); } else { this.solids.push(s); this.index(s); }
     return s;

@@ -153,7 +153,7 @@ export class Game {
     const mv = this.app.paused || this.chat ? { x: 0, y: 0 } : readMove();
     const free = !this.app.paused && !this.chat && !this.app.busy;
     const inp = free ? { mx: mv.x, my: mv.y, jumpP: edge('jump'), jumpH: held('jump'), spinP: edge('spin'), blastP: edge('blast'), hookP: false, actP: edge('act') } : { mx: 0, my: 0 };
-    this.updateBus(dt); me.update(dt, inp, this); me.updateBlob(w); this.pond(me);
+    this.updateBus(dt); if (this.ride) this.ride(dt); else me.update(dt, inp, this); me.updateBlob(w); this.pond(me);
     this.setVis(regionAt(me.x, me.y + 0.3, me.z)); this.hud.region(this.areaLabel());
     for (const p of this.players.values()) if (!p.local) { p.remoteUpdate(dt); p.updateBlob(w); }
     updateFrustum(E.camera);
@@ -165,7 +165,7 @@ export class Game {
   pond(me) { const [cx, cz] = this.world.spots.pond; const dx = (me.x - cx) / 6.3, dz = (me.z - cz) / 4.2; if (dx * dx + dz * dz < 1 && me.y < 0.05 && me.onGround) { if (!this._wet) { this._wet = true; sfx('splat'); this.fx.burst(me.x, 0.1, me.z, 0x7dd3fc, 18, 5); this.toastMsg('🦆 Splash! The ducks escort you back to shore.'); const a = Math.atan2(dz, dx); me.place([cx + Math.cos(a) * 7.4, 0.1, cz + Math.sin(a) * 5.2], me.yaw); } } else this._wet = false; }
   // day <-> golden evening cycle (host time, so co-op players share the sky). Pure tone, no quality change.
   dayK() { const o = (this.net.online && this.hostTod) || S.opts.tod || 'auto'; if (o === 'day') return 0; if (o === 'evening') return 1; const p = (this.T / DAY) % 1; return p < 0.45 ? 0 : p < 0.55 ? (p - 0.45) / 0.1 : p < 0.9 ? 1 : 1 - (p - 0.9) / 0.1; }
-  light(dt) { const k0 = this.dayK(); this.ev = this.ev == null ? k0 : this.ev + (k0 - this.ev) * Math.min(1, dt * 2); const ev = this.ev, inside = this.region !== 'out';
+  light(dt) { const k0 = this.dayK(); this.ev = this.ev == null ? k0 : this.ev + (k0 - this.ev) * Math.min(1, dt * 2); const ev = this.ev, inside = this.region !== 'out' && this.region !== 'r_roof';
     const L = inside ? [0.95, 0.42, 0.55, 1.25, 0.26] : [1.0 - ev * 0.08, 0.6 - ev * 0.12, 0.85 - ev * 0.3, 1.0 - ev * 0.12, 0.38 + ev * 0.14];
     const k = Math.min(1, dt * 4), R = E.renderer; R.toneMappingExposure += (L[0] - R.toneMappingExposure) * k; E.hemi.intensity += (L[1] - E.hemi.intensity) * k; this.scene.environmentIntensity += (L[2] - this.scene.environmentIntensity) * k;
     if (E.bloom) { E.bloom.threshold += (L[3] - E.bloom.threshold) * k; E.bloom.strength += (L[4] - E.bloom.strength) * k; }
@@ -273,6 +273,7 @@ export class Game {
   hookTarget() { return null; }
   // ------------------------------------------------ camera (pulled back; never clips through walls; indoor rooms clamp the lens inside)
   updateCam(dt) { const c = this.cam, me = this.me, cam = E.camera, sens = (S.opts.camSens || 1);
+    if (this.camRide) { IN.camDX = IN.camDY = 0; this.camRide(dt, c, cam); return; } // scripted rides (Sky Tours) fly their own smooth camera
     if (c.reg !== this.region) { if (c.reg !== undefined) c.snap = true; c.reg = this.region; } // walking through a door: clean cut instead of sliding through the wall
     if (IN.camDX || IN.camDY) { c.yaw -= IN.camDX * 0.0085 * sens * (S.opts.invertX ? -1 : 1); c.pitch = Math.max(-0.1, Math.min(1.15, c.pitch + IN.camDY * 0.005 * sens)); IN.camDX = IN.camDY = 0; }
     const manual = performance.now() - IN.lastCam < 1500;

@@ -6,11 +6,12 @@
 import * as THREE from 'three';
 import * as K from './kit.js';
 import { building, gable, REGIONS, DOORS, AREAS } from './town.js';
+import { buildFloor2, F2_REGIONS } from './floor2geo.js';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, blobGeo, pick, wedge, gear, tree, bush, lampPost, bench, flowerBed, fenceRun, D, G } = K;
 const R = K.R, PI = Math.PI, F = 0.05;
 const PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const ROW_REGIONS = [
-  { id: 'r_office', x0: 53, x1: 73, z0: 20, z1: 40, y0: -1, y1: 7, ceil: 6.0, name: '🐀 Ratita Branch Office' },
+  { id: 'r_office', x0: 53, x1: 73, z0: 20, z1: 40, y0: -1, y1: 6.3, ceil: 6.0, name: '🐀 Ratita Branch Office' },
   { id: 'r_store', x0: 77, x1: 93, z0: 24, z1: 40, y0: -1, y1: 6, ceil: 5.0, name: '🛍️ Ratita Gadget Store' },
   { id: 'r_cafe', x0: 53, x1: 66, z0: 53, z1: 67, y0: -1, y1: 6, ceil: 4.8, name: '🧀 Gouda Byte Cafe' },
   { id: 'r_work', x0: 69, x1: 82, z0: 53, z1: 67, y0: -1, y1: 7, ceil: 5.6, name: '🔧 R&D Workshop' },
@@ -31,12 +32,13 @@ export function trackPt(s) { // s in [0,1): from the start line (x 76, north str
 export const TRACK_LEN = 2 * (TRACK.xb - TRACK.xa) + 2 * PI * TRACK.r;
 // ------------------------------------------------------------------------------------------------ build
 export function buildRow(w) {
-  if (!REGIONS.some((r) => r.id === 'r_office')) { REGIONS.push(...ROW_REGIONS); Object.assign(DOORS, ROW_DOORS); AREAS.unshift({ x0: 53, x1: 99, z0: -3.5, z1: 19, name: '🏁 Ratita Test Yard' }, { x0: 49, x1: 102, z0: -3.5, z1: 73, name: '🐀 Ratita Row' }); }
+  if (!REGIONS.some((r) => r.id === 'r_office')) { REGIONS.push(...ROW_REGIONS, ...F2_REGIONS); Object.assign(DOORS, ROW_DOORS); AREAS.unshift({ x0: 53, x1: 99, z0: -3.5, z1: 19, name: '🏁 Ratita Test Yard' }, { x0: 49, x1: 102, z0: -3.5, z1: 73, name: '🐀 Ratita Row' }); }
   w.rowGears = []; w.rowSpots = {}; const I = w.I;
   w.region = 'shell'; land(w); gate(w);
   w.region = 'rowFar'; farLOD(w);
   w.region = 'row'; street(w); plaza(w); yard(w); shells(w);
   office(w); store(w); cafe(w); workshop(w); museum(w);
+  buildFloor2(w);
   w.region = 'shell'; }
 const gearAt = (w, x, y, z) => w.rowGears.push([x, y, z]);
 // ------------------------------------------------------------------------------------------------ ground, boundary hedges, decor beyond
@@ -178,15 +180,6 @@ function yard(w) { const { xa, xb, za, zb, r, cz, w: tw } = TRACK;
 function shells(w) { const sh = 'row';
   // BRANCH OFFICE: white + pink glass tower look, two-storey facade, rooftop logo
   building(w, { id: 'r_office', shell: sh, x0: 53, z0: 20, x1: 73, z1: 40, ceil: 6.0, ext: 0xffd3e8, int: 0xfdf2f8, trim: PINK, frame: 0xffffff, base: 0x334155, floor: ['marble', 0xfff7fb, 0xfce7f3, 2.5], door: { side: 's', a: 61, b: 65, h: 4.2 }, winTop: 4.8, winBot: 0.9, winW: 3.0, winStep: 4.2, noBoxes: true, li: 30, mat: PINK, awning: [PINK, 0xffffff] });
-  w.region = sh; { const y = 6.4; w.add('g', rbox(20.6, 2.6, 20.6, 0.2), 0xf5f7ff, 63, y + 1.3, 30); for (let i = 0; i < 4; i++) [[63, 40.32, 0], [63, 19.68, 0]].forEach(([x, z]) => w.add('e', rbox(18.6, 1.4, 0.08, 0.04), 0xbfe9ff, x, y + 1.3, z)); [52.68, 73.32].forEach((x) => w.add('e', rbox(0.08, 1.4, 18.6, 0.04), 0xbfe9ff, x, y + 1.3, 30));
-    for (let k = 0; k < 6; k++) [40.36, 19.64].forEach((z) => w.add('g', rbox(0.18, 1.6, 0.12, 0.04), 0xffffff, 54.5 + k * 3.4, y + 1.3, z)); w.add('g', rbox(21, 0.35, 21, 0.12), PINK, 63, y + 2.75, 30); w.add('g', rbox(21.2, 0.22, 21.2, 0.08), 0xffffff, 63, y + 0.05, 30);
-    w.solid(52.7, y, 19.7, 73.3, y + 2.9, 40.3, { cam: true, roof: true });
-    sign3d(w, 'RATITA INDUSTRIES', 63, y + 0.85, 40.42, 0, 0.62, PINK, 0xffffff, { glow: 0.5 });
-    // giant rat head logo on the roof
-    const lx = 63, ly = y + 3.0, lz = 33; w.add('g', rcyl(2.2, 0.35, 0.1, 40), CHEESE, lx, ly, lz); w.add('g', sph(28), 0xa9afbd, lx, ly + 1.9, lz, 0, 0, 0, 1.5, 1.4, 1.2); [-1, 1].forEach((s) => { w.add('g', sph(20), 0xa9afbd, lx + s * 1.25, ly + 3.0, lz, 0, 0, 0, 0.8, 0.8, 0.35); w.add('g', sph(20), 0xffb3c8, lx + s * 1.25, ly + 3.0, lz + 0.16, 0, 0, 0, 0.62, 0.62, 0.3); w.add('g', sph(12), 0x1b1b24, lx + s * 0.5, ly + 2.15, lz + 1.05, 0, 0, 0, 0.16); w.add('l', sph(8), 0xffffff, lx + s * 0.5 + 0.06, ly + 2.22, lz + 1.18, 0, 0, 0, 0.05, 0.05, 0.05, 0.5); });
-    w.add('g', sph(14), 0xff8fb1, lx, ly + 1.75, lz + 1.4, 0, 0, 0, 0.25, 0.2, 0.2); for (let k = 0; k < 3; k++) [-1, 1].forEach((s) => w.add('x', cyl(6), 0x6b7280, lx + s * 0.75, ly + 1.65 - k * 0.12, lz + 1.25, 0, 0, s * (PI / 2 + (k - 1) * 0.15), 0.012, 0.7, 0.012));
-    w.add('x', gear(10), CHEESE, lx + 2.8, ly + 0.6, lz, PI / 2, 0, 0, 0.9, 0.9, 0.5); w.lights.push({ x: lx, y: ly + 2, z: lz + 3, c: 0xffd9e8, i: 8, d: 12, out: true });
-    for (let i = 0; i < 4; i++) { const x = 55 + i * 5.4; w.add('x', rbox(1.4, 0.9, 1.0, 0.1), 0x94a3b8, x, y + 3.35, 22.5); w.add('x', cyl(14), 0x64748b, x, y + 3.85, 22.5, 0, 0, 0, 0.45, 0.06, 0.45); } }
   // GADGET STORE: cheese-yellow, big shop windows, giant spinning-gear sign
   building(w, { id: 'r_store', shell: sh, x0: 77, z0: 24, x1: 93, z1: 40, ceil: 5.0, ext: CHEESE, int: 0xfff7e0, trim: 0xffffff, frame: 0xffffff, base: 0xb45309, floor: ['tile', 0xf8fafc, 0xdbeafe, 1.2], door: { side: 's', a: 83, b: 87, h: 3.4 }, winTop: 3.8, winBot: 0.7, winW: 3.2, sign: ['GADGET STORE', 0.4, 0xffffff, PINK], awning: [PINK, 0xffffff], noBoxes: true, li: 26 });
   w.region = sh; { w.add('g', rbox(16.6, 0.5, 16.6, 0.12), 0xf59e0b, 85, 5.65, 32); w.solid(76.7, 5.4, 23.7, 93.3, 5.9, 40.3, { cam: true, roof: true }); w.add('x', gear(12), PINK, 85, 8.0, 39.0, 0, 0, 0, 2.0, 2.0, 0.6); w.add('g', rcyl(0.9, 0.7, 0.1, 28), 0xffffff, 85, 8.0, 39.15, PI / 2, 0, 0); w.add('x', cyl(10), 0x334155, 85, 5.9, 39.0, 0, 0, 0, 0.12, 1.0, 0.12);
@@ -258,9 +251,6 @@ function office(w) { w.region = 'r_office'; const I = w.I;
   K.tableR(w, 66.6, 32.2, 0.75, 0.8, 0xffffff, 0xd4a017); cake(w, 66.6, 0.8, 32.2);
   for (let i = 0; i < 10; i++) { const bx = 55 + (i % 5) * 0.4, bz = 31.4 + (i < 5 ? 0 : 0.4), by = 2.8 + (i % 3) * 0.4; w.add('m', cyl(4), 0xffffff, bx, F + 1.0, bz, 0, 0, 0, 0.006, by - 1.0, 0.006); w.add('g', sph(14), pick([PINK, CHEESE, TEAL, 0xffffff]), bx, by + F, bz, 0, 0, 0, 0.26, 0.32, 0.26); } w.add('m', rbox(0.5, 0.4, 0.5, 0.06), CHEESE, 55.8, F, 31.6);
   sign3d(w, 'GRAND OPENING', 63, 5.3, 39.5, PI, 0.3, PINK, 0xffffff, { glow: 0.3 });
-  // the elevator (coming soon)
-  { const T = w.tf(53.36, F, 33.0, PI / 2); T.box('x', 0xd1d5db, 0, 0, 0, 2.0, 3.0, 0.1, 0.04); T.box('x', 0xe5e7eb, -0.48, 0.05, 0.06, 0.92, 2.8, 0.03, 0.02); T.box('x', 0xe5e7eb, 0.48, 0.05, 0.06, 0.92, 2.8, 0.03, 0.02); T.add('l', sph(10), CHEESE, 0, 3.2, 0.06, 0, 0, 0, 0.12, 0.12, 0.04, 0.6); sign3d(w, 'FLOOR 2 SOON', ...[T.P(0, 0, 0.1)[0]], F + 3.35, T.P(0, 0, 0.1)[2], PI / 2, 0.1, NAVY, null);
-    I({ kind: 'fun', id: 'relev', x: 54.4, y: F, z: 33.0, r: 1.4, label: '🛗 Press the elevator button', sfx: 'click', msgs: ['🛗 *ding* … the doors don\'t open. A sticky note says: "FLOOR 2 COMING SOON. Love, Luna."', '🛗 *ding ding* You hear Pi-rat\'s voice: "Arr, that be the cheese storage floor! Not ready yet!"', '🛗 The elevator plays smooth jazz. You feel very fancy.'] }); }
   // ceiling banners
   for (let i = 0; i < 4; i++) { const x = 55.5 + i * 5; w.add('f', rbox(1.0, 1.6, 0.04, 0.03), [PINK, CHEESE, TEAL, PINK][i], x, 4.6, 38.2); w.add('x', cyl(6), 0xd4a017, x, 5.45, 38.2, 0, 0, PI / 2, 0.02, 1.2, 0.02); w.add('g', sph(10), 0xffffff, x, 4.7, 38.17, 0, 0, 0, 0.22, 0.22, 0.05); }
   gearAt(w, 55.8, 1.1, 31.6);
@@ -429,3 +419,4 @@ function museum(w) { w.region = 'r_museum'; const I = w.I;
   dress(w, { x0: 85, z0: 53, x1: 98, z1: 67, door: { side: 'n', a: 89.5, b: 93.5 }, winW: 1.8 }, { n: [], e: [[64, 67]], w: [] }, { seed: 4, y: 2.9, frame: 0xd4a017, shelf: false, cols: [0xddd6fe, 0xfbcfe8, 0xbfdbfe, 0xfde68a] });
   w.lights.push({ x: 91.5, y: 4, z: 60, c: 0xf3e8ff, i: 14, d: 13 });
 }
+export { gearAt, ratHead, pendant, plaque, dress, drone, blimp, bistro, cake };
