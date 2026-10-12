@@ -1,6 +1,6 @@
 // Pup Town townsfolk, what they say, side tasks and the mystery "Who stole the Golden Bone?". Pure data + helpers.
-import { S, persist } from './save.js';
-import { ROW_NPCS, ROW_IDS, rowTalk, SHOP } from './rowdata.js';
+import { S, persist } from './save.js?v=20261011r38c';
+import { ROW_NPCS, ROW_IDS, rowTalk, SHOP } from './rowdata.js?v=20261011r38c';
 const PI = Math.PI;
 export const HATS = [
   { id: 'none', n: 'No Hat', how: 'Always yours' }, { id: 'ears', n: 'Puppy Ears Headband', how: "Find Candy's 3 squeaky toys" }, { id: 'fire', n: 'Fire Helmet', how: 'Rescue Mittens the kitten' },

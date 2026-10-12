@@ -2,14 +2,14 @@
 // mystery (clues, runaway Sweepy, the ribbon cutting), the Turbo Test Track + Squeak Zapper Range (3D), the Gadget Store
 // gadgets, region culling for the district and co-op DLC sharing (the host's copy unlocks it for guests).
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js';
-import { P } from './geo.js';
-import { rcyl, sph, torus, gear, capsule, cone, wedge } from './shapes.js';
-import { S, persist } from './save.js';
-import { inView } from './perf.js';
-import { inRow, trackPt, TRACK } from './row.js';
-import { Floor2 } from './floor2.js';
-import { R, ownsRow, coins, ROW_BADGES, ROW_CLUES, rowClueText, shopItem, SHOP, DLC_NAME } from './rowdata.js';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38c';
+import { P } from './geo.js?v=20261011r38c';
+import { rcyl, sph, torus, gear, capsule, cone, wedge } from './shapes.js?v=20261011r38c';
+import { S, persist } from './save.js?v=20261011r38c';
+import { inView } from './perf.js?v=20261011r38c';
+import { inRow, trackPt, TRACK } from './row.js?v=20261011r38c';
+import { Floor2 } from './floor2.js?v=20261011r38c';
+import { R, ownsRow, coins, ROW_BADGES, ROW_CLUES, rowClueText, shopItem, SHOP, DLC_NAME } from './rowdata.js?v=20261011r38c';
 const PI = Math.PI;
 const PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 export const TRACK_GOLD = 30, TRACK_SILVER = 36, TRACK_BRONZE = 45;
@@ -50,7 +50,7 @@ export class RowPlay {
     if (q >= 4) { this.trans.position.set(...sp.museumPed); this.trans.position.y += 0.25; this.trans.scale.setScalar(1.3); } else this.trans.scale.setScalar(1);
     if (q !== 2) { this.sweepy.root.position.set(59.4, 0.0, 16.0); this.sweepy.root.rotation.y = PI; } if (this.f2) this.f2.refresh(); this.g.hud.dirty = true; }
   applyGadgets() { const r = R(), me = this.g.me, own = this.owned(); for (const it of SHOP) if (it.kind === 'gadget') { if (own && r.items[it.id] && !r.off[it.id]) me.gadgets.add(it.id); else me.gadgets.delete(it.id); } }
-  vis(v) { const me = this.g.me; if (inRow(me.x, me.z) || (me.x > 30 && me.z > -14 && me.z < 84)) v.add('row'); else v.add('rowFar'); const dO = Math.hypot(me.x - 63, me.z - 30); if (dO < 19 && (v.has('row') || v.has('out')) && me.y < 6) v.add('r_f2'); if (me.y > 9 && dO < 60) v.add('r_roof'); }
+  vis(v, R0) { const me = this.g.me; if (inRow(me.x, me.z) || (me.x > 30 && me.z > -14 && me.z < 84)) v.add('row'); else v.add('rowFar'); const dO = Math.hypot(me.x - 63, me.z - 30); const reg = R0 || this.g.region; if (me.y > 9 && dO < 60) v.add('r_roof'); if (me.y > 6) v.delete('r_office'); if (reg === 'r_office') v.delete('r_f2'); /* one storey at a time */ }
   inside() { return inRow(this.g.me.x, this.g.me.z); }
   // ------------------------------------------------ frame
   update(dt) { const g = this.g, me = g.me, T = g.T, r = R(), q = r.q | 0, inside = this.inside(), near = inside || me.x > 30;

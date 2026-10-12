@@ -1,25 +1,25 @@
 // Grok Pup Town runtime: the town, players, townsfolk, the Dog-Bus, birds & ducks, day/evening, collectibles, the
 // Golden Bone mystery, fetch + agility (3D mini-games), co-op hooks.
 import * as THREE from 'three';
-import { E, setEnvironment, followShadow, skyUniforms } from './engine.js';
-import { World } from './world.js';
-import { buildTown, regionAt, areaName, REGIONS, DOORS } from './town.js';
-import { Player } from './player.js';
-import { FX } from './fx.js';
-import { makeRat, animRat, makeMartina, animMartina, MB, toGroup } from './models.js';
-import { makePup, animPup, makeKitten, birdGeo, makeDogBus } from './dogs.js';
-import { MATS } from './mats.js';
-import { P } from './geo.js';
-import { rcyl, capsule, torus, sph, cone, heart, star } from './shapes.js';
-import { updateFrustum, inView, LightPool } from './perf.js';
-import { sfx, playMusic } from './audio.js';
-import { S, persist } from './save.js';
-import { NPCS, talk, clueText, BONE_CLUES, HATS, BADGES } from './story.js';
-import { readMove, edge, held, IN } from './input.js';
-import { buildRow } from './row.js';
-import { RowPlay } from './rowplay.js';
-import { rowUI } from './rowgames.js';
-import { ROW_IDS, rowWants } from './rowdata.js';
+import { E, setEnvironment, followShadow, skyUniforms } from './engine.js?v=20261011r38c';
+import { World } from './world.js?v=20261011r38c';
+import { buildTown, regionAt, areaName, REGIONS, DOORS } from './town.js?v=20261011r38c';
+import { Player } from './player.js?v=20261011r38c';
+import { FX } from './fx.js?v=20261011r38c';
+import { makeRat, animRat, makeMartina, animMartina, MB, toGroup } from './models.js?v=20261011r38c';
+import { makePup, animPup, makeKitten, birdGeo, makeDogBus } from './dogs.js?v=20261011r38c';
+import { MATS } from './mats.js?v=20261011r38c';
+import { P } from './geo.js?v=20261011r38c';
+import { rcyl, capsule, torus, sph, cone, heart, star } from './shapes.js?v=20261011r38c';
+import { updateFrustum, inView, LightPool } from './perf.js?v=20261011r38c';
+import { sfx, playMusic } from './audio.js?v=20261011r38c';
+import { S, persist } from './save.js?v=20261011r38c';
+import { NPCS, talk, clueText, BONE_CLUES, HATS, BADGES } from './story.js?v=20261011r38c';
+import { readMove, edge, held, IN } from './input.js?v=20261011r38c';
+import { buildRow } from './row.js?v=20261011r38c';
+import { RowPlay } from './rowplay.js?v=20261011r38c';
+import { rowUI } from './rowgames.js?v=20261011r38c';
+import { ROW_IDS, rowWants } from './rowdata.js?v=20261011r38c';
 const PI = Math.PI;
 const TOYS = [[18.4, 0.0, 41.6], [22.9, 0.17, -29.4], [7.5, 0.0, -44.6]];
 const DAY = 420; // seconds per day/evening cycle
@@ -143,7 +143,7 @@ export class Game {
   bonePos() { const q = S.q.bone | 0, b = this.bone; b.userData.carry = q === 3; if (q >= 4) { b.visible = true; b.position.set(...this.world.spots.bonePed); b.scale.setScalar(0.9); } else if (q === 3) { b.visible = true; b.scale.setScalar(0.7); } else b.visible = false; }
   // ------------------------------------------------ region culling: interiors only draw when you're inside or near their door
   setVis(r, force) { this._vt -= 1; if (r === this.region && !force && this._vt > 0) return; this._vt = 15; const me = this.me; const v = new Set(['shell', 'out', r]);
-    for (const k in DOORS) { const [dx, dz] = DOORS[k]; if (Math.hypot(me.x - dx, me.z - dz) < 15) v.add(k); } if (this.row) this.row.vis(v);
+    for (const k in DOORS) { const [dx, dz] = DOORS[k]; if (Math.hypot(me.x - dx, me.z - dz) < 15) v.add(k); } if (this.row) this.row.vis(v, r);
     const key = [...v].sort().join(','); if (key === this._vk && r === this.region) return; this._vk = key; this.region = r; this.vis = v;
     for (const k in this.world.regionMeshes) { const on = v.has(k); for (const m of this.world.regionMeshes[k]) m.visible = on; } if (this.row) { this.row._culled = true; this.row.farCull(); }
     this.bookcase.visible = v.has('library'); }

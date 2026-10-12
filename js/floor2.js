@@ -3,13 +3,13 @@
 // Pup Town with commentary, the occasional cartoony bumpy landing (1 in 4, never on your first tour), dizzy stars,
 // and the Ratita tow-drone that brings the heli home. Co-op: the tour start is broadcast and everyone near the pad rides.
 import * as THREE from 'three';
-import { MB, toGroup, makeRat } from './models.js';
-import { P } from './geo.js';
-import { rcyl, star } from './shapes.js';
-import { persist } from './save.js';
-import { panel, closePanel } from './ui.js';
-import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js';
-import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js';
+import { MB, toGroup, makeRat } from './models.js?v=20261011r38c';
+import { P } from './geo.js?v=20261011r38c';
+import { rcyl, star } from './shapes.js?v=20261011r38c';
+import { persist } from './save.js?v=20261011r38c';
+import { panel, closePanel } from './ui.js?v=20261011r38c';
+import { R, F2, F2_CLUES, f2ClueText, coins } from './rowdata.js?v=20261011r38c';
+import { ELEV, PAD, F2Y, ROOFY } from './floor2geo.js?v=20261011r38c';
 const PI = Math.PI, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee;
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const smooth = (t) => t * t * (3 - 2 * t);
@@ -23,14 +23,14 @@ const WP = [
   [74, 22, 44, 'Below us: Ratita Row! And that golden statue? That\'s Luna. She polishes it every single morning.'],
   [90, 22, 58, 'The Museum of Inventions! The Pup-Translator lives there now, all thanks to you!'],
   [97, 21, 30], [80, 19, 8, 'The Turbo Test Track! From up here, Sweepy\'s tire marks look like a big smiley face.'],
-  [50, 22, -14, 'The Lookout Tower! The fire pups can see all of Pup Town from there. Not as well as US though.'],
-  [14, 23, -30, 'Town Hall! Mayor Biscuit waves at every heli. Wave back!'],
+  [50, 27, -14, 'The Lookout Tower! The fire pups can see all of Pup Town from there. Not as well as US though.'],
+  [14, 26, -30, 'Town Hall! Mayor Biscuit waves at every heli. Wave back!'],
   [-4, 27, -52, 'Lookout Hill, the highest spot in town. Torty climbed it once. It took her all summer.'],
-  [-28, 22, -30, 'The library! Shhh… I\'ll fly extra quietly. Whirr whirr.'], [-30, 19, 0, 'Smell that? The bakery! Fresh biscuits. Even up here!'],
-  [-6, 17, 6, 'The Town Square fountain! Make a wish. Mine is: more cheese.'],
-  [-34, 19, 40, 'Candy\'s backyard! Rumour says there are bones buried everywhere down there.'],
-  [-8, 17, 52, 'Paw Park! The ducks call me "the big pink bird". We\'re friends.'], [22, 18, 50],
-  [46, 19, 46, 'The Ratita Gate! Torty walked through it this morning. Hi Torty! She\'s still waving.'],
+  [-28, 25, -30, 'The library! Shhh… I\'ll fly extra quietly. Whirr whirr.'], [-30, 23, 0, 'Smell that? The bakery! Fresh biscuits. Even up here!'],
+  [-6, 20, 6, 'The Town Square fountain! Make a wish. Mine is: more cheese.'],
+  [-34, 22, 40, 'Candy\'s backyard! Rumour says there are bones buried everywhere down there.'],
+  [-8, 20, 52, 'Paw Park! The ducks call me "the big pink bird". We\'re friends.'], [22, 20, 50],
+  [46, 20, 46, 'The Ratita Gate! Torty walked through it this morning. Hi Torty! She\'s still waving.'],
   [62, 18, 38], [PAD[0], ROOFY + 5, PAD[2], 'And now… gentle as a cheese soufflé… we\'re landing!'], [PAD[0], PAD_Y, PAD[2]],
 ];
 // safe, soft crash-landing spots: [name, x, z, starts after waypoint, ground y, Snowie's quip]
@@ -116,10 +116,10 @@ export class Floor2 {
     this.stops[E.to].want = 0; this.el = null; g.app.busy = false; g.cam.yaw = PI / 2; }
   // ------------------------------------------------ TELESCOPES: a zoomed look at a landmark
   lookScope(i) { const g = this.g; const sights = [[[0, 6, -27], '🔭 Town Hall! The clock says it\'s… telescope o\'clock.'], [[0, 2.5, 0], '🔭 The Town Square fountain. A pup is making a wish!'], [[2, 1.5, 47], '🔭 Paw Park! Ducks, dogs and one very fast squirrel.'], [[-2, 9, -56], '🔭 Lookout Hill. Someone up there is looking back at you!']];
-    const [tgt, msg] = sights[(i + (this._sc = ((this._sc | 0) + 1))) % sights.length]; const eye = new THREE.Vector3(g.me.x - 1.0, ROOFY + 1.6, g.me.z); g.toastMsg(msg); g.sfx('click'); g.app.busy = true; const cam = g.cam, E0 = null; void E0;
-    let t = 0; const fov0 = null; void fov0; const T = new THREE.Vector3(...tgt);
-    g.camRide = (dt, c, camera) => { t += dt; const k = smooth(Math.min(1, t / 0.6)) * (t > 3.4 ? Math.max(0, 1 - (t - 3.4) / 0.5) : 1); camera.position.copy(eye); const L = eye.clone().lerp(T, 0.02 + 0.98 * k); camera.lookAt(L.x, L.y, L.z); camera.fov = 58 - 30 * k; camera.updateProjectionMatrix();
-      if (t > 3.9) { g.camRide = null; g.app.busy = false; camera.fov = 58; camera.updateProjectionMatrix(); cam.snap = true; } }; }
+    const [tgt, msg] = sights[(i + (this._sc = ((this._sc | 0) + 1))) % sights.length]; const eye = new THREE.Vector3(g.me.x - 1.0, ROOFY + 1.6, g.me.z); g.toastMsg(msg); g.sfx('click'); g.app.busy = true; document.body.classList.add('riding'); const cam = g.cam;
+    let t = 0, F0 = null; const T = new THREE.Vector3(...tgt);
+    g.camRide = (dt, c, camera) => { t += dt; const k = smooth(Math.min(1, t / 0.6)) * (t > 3.4 ? Math.max(0, 1 - (t - 3.4) / 0.5) : 1); if (F0 == null) F0 = camera.fov; camera.position.copy(eye); const L = eye.clone().lerp(T, 0.02 + 0.98 * k); camera.lookAt(L.x, L.y, L.z); camera.fov = F0 * (1 - 0.6 * k); camera.updateProjectionMatrix();
+      if (t > 3.9) { g.camRide = null; g.app.busy = false; document.body.classList.remove('riding'); camera.fov = F0; camera.updateProjectionMatrix(); cam.snap = true; } }; }
   // ------------------------------------------------ SKY TOURS
   startTour() { const g = this.g, f = F2(), me = g.me; if (this.tour || this.tow) return;
     const crash = !!(f.tours >= 1 && (window.__f2crash != null ? window.__f2crash : Math.random() < 0.25)), site = window.__f2site != null ? window.__f2site : (Math.random() * CRASH.length) | 0;
@@ -131,7 +131,7 @@ export class Floor2 {
     this.tour = { id: m.id, T0: m.T0, crash: !!m.crash, site: CRASH[m.site % CRASH.length], riders: m.riders, seat: ride ? seat : -1, said: -1, phase: 'fly', cy: this.heli.yaw };
     if (m.crash) { const c = this.tour.site; this.tour.crashS = this.wpS[c[3]] + 6; }
     this.heliS.off = true; this.w.dirtyDyn && this.w.dirtyDyn(); this.heliAt = 'air'; this.heliI.r = 0;
-    if (ride) { g.app.busy = true; this.hideChat(); g.ride = (dt) => this.rideMe(dt); this.camStart(); g.sfx('honk'); this.say('🐀 Snowie: Welcome aboard! Rotor, clear the pad! Spinning up…'); }
+    if (ride) { g.app.busy = true; document.body.classList.add('riding'); this.hideChat(); g.ride = (dt) => this.rideMe(dt); this.camStart(); g.sfx('honk'); this.say('🐀 Snowie: Welcome aboard! Rotor, clear the pad! Spinning up…'); }
     else if (seat >= 0) g.toastMsg('🚁 Snowie took off without you! Wait on the pad for the next tour.'); }
   hideChat() { const g = this.g; if (g.chat && g.endChat) g.endChat(); }
   say(t) { this.sub.textContent = t; this.sub.className = 'on'; clearTimeout(this._st); this._st = setTimeout(() => { this.sub.className = ''; }, 5200); }
@@ -159,10 +159,10 @@ export class Floor2 {
   rideMe(dt) { const g = this.g, me = g.me, A = this.tour; const v = this.seatPos(A ? A.seat : 0, new THREE.Vector3()); me.x = v.x; me.y = v.y; me.z = v.z; me.yaw = this.heli.yaw; me.vx = me.vy = me.vz = 0; me.onGround = true; me.speed = 0; me.anim(dt); }
   camStart() { const g = this.g, c = g.cam; this.cr = { pos: E0(g), yaw: this.heli.yaw, look: new THREE.Vector3(this.heli.pos.x, this.heli.pos.y + 1.5, this.heli.pos.z) };
     g.camRide = (dt, cc, camera) => { const H = this.heli, C = this.cr; C.yaw = angLerp(C.yaw, H.yaw, Math.min(1, dt * 1.3)); const fw = new THREE.Vector3(Math.sin(C.yaw), 0, Math.cos(C.yaw)); const air = H.pos.y > ROOFY + 3 || (this.tour && this.tour.phase !== 'fly') || this.tow;
-      const back = air ? 13 : 9.5, upY = air ? 5.2 : 3.6; const want = new THREE.Vector3(H.pos.x - fw.x * back, H.pos.y + upY, H.pos.z - fw.z * back); const lk = new THREE.Vector3(H.pos.x + fw.x * 4, H.pos.y + 1.4, H.pos.z + fw.z * 4);
+      const back = air ? 13 : 9.5, upY = air ? 5.2 : 3.6; const ca = C.yaw + (air ? 0.6 : 0.35), want = new THREE.Vector3(H.pos.x - Math.sin(ca) * back, H.pos.y + upY, H.pos.z - Math.cos(ca) * back); // 3/4 rear view: the passengers show past the tail const lk = new THREE.Vector3(H.pos.x + fw.x * 4, H.pos.y + 1.4, H.pos.z + fw.z * 4);
       const k = 1 - Math.exp(-dt * 2.6); C.pos.lerp(want, k); C.look.lerp(lk, 1 - Math.exp(-dt * 4)); const sh = (cc.shake || 0); cc.shake = Math.max(0, sh - dt * 1.5);
-      camera.position.set(C.pos.x + (Math.random() - 0.5) * sh, C.pos.y + (Math.random() - 0.5) * sh, C.pos.z + (Math.random() - 0.5) * sh); camera.lookAt(C.look); if (camera.fov !== 62) { camera.fov = 62; camera.updateProjectionMatrix(); } cc.pos.copy(camera.position); cc.tgt.copy(C.look); }; }
-  camEnd() { const g = this.g; g.camRide = null; const c = g.cam; c.yaw = g.me.yaw; c.snap = true; const cam = g.cam; void cam; }
+      camera.position.set(C.pos.x + (Math.random() - 0.5) * sh, C.pos.y + (Math.random() - 0.5) * sh, C.pos.z + (Math.random() - 0.5) * sh); camera.lookAt(C.look); if (C.f0 == null) C.f0 = camera.fov; const fv = C.f0 * 0.92; if (Math.abs(camera.fov - fv) > 0.01) { camera.fov = fv; camera.updateProjectionMatrix(); } cc.pos.copy(camera.position); cc.tgt.copy(C.look); }; }
+  camEnd() { const g = this.g; if (this.cr && this.cr.f0) { E_CAM(g).fov = this.cr.f0; E_CAM(g).updateProjectionMatrix(); } g.camRide = null; document.body.classList.remove('riding'); const c = g.cam; c.yaw = g.me.yaw; c.snap = true; const cam = g.cam; void cam; }
   crashLanded() { const g = this.g, A = this.tour, f = F2(), me = g.me, c = A.site; A.phase = 'down'; this.heliAt = 'crash'; this.crashAt = g.T;
     const H = this.heli; this.heliI.x = H.pos.x + 2.6; this.heliI.z = H.pos.z; this.heliI.y = c[4]; this.heliI.r = 2.4; const s = this.heliS; s.off = false; s.min[0] = H.pos.x - 1.8; s.max[0] = H.pos.x + 1.8; s.min[2] = H.pos.z - 1.8; s.max[2] = H.pos.z + 1.8; s.min[1] = c[4]; s.max[1] = c[4] + 2.2; this.w.dirtyDyn && this.w.dirtyDyn();
     if (A.seat >= 0) { g.ride = null; this.camEnd(); g.app.busy = false; const a = H.yaw + PI / 2 + A.seat * 0.6; const px = H.pos.x + Math.sin(a) * 2.8, pz = H.pos.z + Math.cos(a) * 2.8; const gy = this.w.ground(px, pz, c[4] + 3, 0.1).y; me.place([px, (gy > -50 ? gy : c[4]) + 0.15, pz], a); g.cam.yaw = a + PI; g.cam.snap = true;
@@ -171,16 +171,16 @@ export class Floor2 {
       g.toastMsg('💫 Bumpy landing! Nobody hurt. Walk back to Ratita Row, or tap the heli to ride the tow-drone home.'); }
     this.tour = null; this.rideTow = false; }
   endTour() { const g = this.g, A = this.tour, f = F2(); this.tour = null; this.parkHeli(); this.heli.spin = 0.6;
-    if (A && A.seat >= 0) { g.ride = null; this.camEnd(); g.app.busy = false; const v = new THREE.Vector3(PAD[0], ROOFY + 0.15, PAD[2] + 3.4); g.me.place([v.x, v.y, v.z], 0); g.cam.yaw = 0; g.cam.snap = true; f.tours = (f.tours | 0) + 1; persist(); this.rp.badge('f2Tour'); coins(8, g, 'Sky Tour'); this.say('🐀 Snowie: Thanks for flying Snowie\'s Sky Tours! Come back soon! 💖'); g.fx.confetti(v.x, v.y + 1.5, v.z, 40); g.sfx('win'); g.hud.dirty = true; } }
+    if (A && A.seat >= 0) { g.ride = null; this.camEnd(); g.app.busy = false; const v = new THREE.Vector3(PAD[0], ROOFY + 0.15, PAD[2] + 3.4); g.me.place([v.x, v.y, v.z], PI); g.cam.yaw = PI; g.cam.snap = true; f.tours = (f.tours | 0) + 1; persist(); this.rp.badge('f2Tour'); coins(8, g, 'Sky Tour'); this.say('🐀 Snowie: Thanks for flying Snowie\'s Sky Tours! Come back soon! 💖'); g.fx.confetti(v.x, v.y + 1.5, v.z, 40); g.sfx('win'); g.hud.dirty = true; } }
   // tow-drone: flies out from the roof, hooks the heli and carries it home (riders included)
   updateTow(dt) { const g = this.g, H = this.heli;
-    if (this.heliAt === 'crash' && !this.tow && g.T - this.crashAt > 9) { this.tow = { t: 0, from: H.pos.clone(), ride: !!this.rideTow && Math.hypot(g.me.x - H.pos.x, g.me.z - H.pos.z) < 9 }; this.drone.root.visible = true; this.heliI.r = 0; if (this.tow.ride) { g.app.busy = true; g.ride = (d) => { const v = this.seatPos(0, new THREE.Vector3()); const me = g.me; me.x = v.x; me.y = v.y; me.z = v.z; me.yaw = H.yaw; me.vy = 0; me.onGround = true; me.speed = 0; me.anim(d); }; this.camStart(); this.say('🛸 Rotor: Tow-drone here! Hold tight, flying you home!'); } else if (Math.hypot(g.me.x - H.pos.x, g.me.z - H.pos.z) < 30) g.toastMsg('🛸 Here comes Rotor\'s tow-drone to carry the heli home!'); this.heliS.off = true; this.w.dirtyDyn && this.w.dirtyDyn(); }
+    if (this.heliAt === 'crash' && !this.tow && g.T - this.crashAt > 9) { this.tow = { t: 0, from: H.pos.clone(), ride: !!this.rideTow && Math.hypot(g.me.x - H.pos.x, g.me.z - H.pos.z) < 9 }; this.drone.root.visible = true; this.heliI.r = 0; if (this.tow.ride) { g.app.busy = true; g.ride = (d) => { const v = this.seatPos(0, new THREE.Vector3()); const me = g.me; me.x = v.x; me.y = v.y; me.z = v.z; me.yaw = H.yaw; me.vy = 0; me.onGround = true; me.speed = 0; me.anim(d); }; document.body.classList.add('riding'); this.camStart(); this.say('🛸 Rotor: Tow-drone here! Hold tight, flying you home!'); } else if (Math.hypot(g.me.x - H.pos.x, g.me.z - H.pos.z) < 30) g.toastMsg('🛸 Here comes Rotor\'s tow-drone to carry the heli home!'); this.heliS.off = true; this.w.dirtyDyn && this.w.dirtyDyn(); }
     const T = this.tow; const D = this.drone; for (const p of D.props) p.rotation.y += dt * 30; if (!T) return; T.t += dt; const t = T.t;
     const home = new THREE.Vector3(PAD[0], PAD_Y, PAD[2]); const dist = T.from.distanceTo(home), dur = Math.max(6, dist / 11); const hang = 3.6;
     if (t < 3) { const k = smooth(t / 3); const start = new THREE.Vector3(PAD[0], ROOFY + 8, PAD[2]); const over = T.from.clone(); over.y += 3.6 + hang; D.root.position.lerpVectors(start, over, k); D.root.position.y += Math.sin(k * PI) * 6; }
     else if (t < 4) { const over = T.from.clone(); over.y += 3.6 + hang * (1 - (t - 3) * 0.0); D.root.position.copy(over); H.roll += (0 - H.roll) * dt * 4; H.pitch += (0 - H.pitch) * dt * 4; }
     else if (t < 4 + dur) { const k = smooth((t - 4) / dur); const a = T.from, b = home; H.pos.set(a.x + (b.x - a.x) * k, a.y + (b.y - a.y) * k + Math.sin(k * PI) * 14, a.z + (b.z - a.z) * k); H.yaw = angLerp(H.yaw, PAD_YAW, dt * 0.8); H.roll = Math.sin(t * 2) * 0.05; H.pitch = 0; D.root.position.set(H.pos.x, H.pos.y + 3.6 + hang, H.pos.z); }
-    else { this.tow = null; D.root.visible = false; const rode = !!g.ride && T.ride; this.parkHeli(); if (rode) { g.ride = null; this.camEnd(); g.app.busy = false; g.me.place([PAD[0], ROOFY + 0.15, PAD[2] + 3.4], 0); g.cam.yaw = 0; g.cam.snap = true; this.say('🛸 Rotor: Delivered! One heli, one happy passenger. Good as new!'); } return; }
+    else { this.tow = null; D.root.visible = false; const rode = !!g.ride && T.ride; this.parkHeli(); if (rode) { g.ride = null; this.camEnd(); g.app.busy = false; g.me.place([PAD[0], ROOFY + 0.15, PAD[2] + 3.4], PI); g.cam.yaw = PI; g.cam.snap = true; this.say('🛸 Rotor: Delivered! One heli, one happy passenger. Good as new!'); } return; }
     D.root.rotation.y = H.yaw; const top = new THREE.Vector3(H.pos.x, H.pos.y + 3.3, H.pos.z), dp = D.root.position; const len = Math.max(0.1, dp.y - top.y); D.cable.visible = t > 2.6; D.cable.position.set(0, -len / 2, 0); D.cable.scale.set(1, len, 1); D.hook.position.set(0, -len, 0); D.cable.rotation.set(0, 0, 0);
     this.pose(); }
   updateStars(dt) { const S = this.stars; if (S.t <= 0) return; S.t -= dt; const me = this.g.me; S.grp.position.set(me.x, me.y + me.hgt + 0.45, me.z); S.grp.children.forEach((m, i) => { const a = this.g.T * 4 + i / 5 * PI * 2; m.position.set(Math.cos(a) * 0.42, Math.sin(this.g.T * 6 + i) * 0.05, Math.sin(a) * 0.42); m.rotation.set(0, -a, 0); }); if (S.t <= 0) S.grp.visible = false; }
@@ -191,3 +191,4 @@ export class Floor2 {
     const near = Math.hypot(g.me.x - this.heli.pos.x, g.me.z - this.heli.pos.z) < 140; this.heli.root.visible = near; }
 }
 function E0(g) { return g.cam.pos.clone ? g.cam.pos.clone() : new THREE.Vector3(); }
+function E_CAM(g) { return g.app.E ? g.app.E.camera : window.__hq.E.camera; }

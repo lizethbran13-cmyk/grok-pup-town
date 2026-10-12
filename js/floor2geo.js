@@ -3,8 +3,8 @@
 // break room. Rooftop (y 11.2): Snowie's Sky Tours helipad, telescopes over Pup Town, garden, deck chairs, the rat logo.
 // Everything is authored at floor level and lifted with w.oy, so every prop helper works unchanged.
 import * as THREE from 'three';
-import * as K from './kit.js';
-import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js';
+import * as K from './kit.js?v=20261011r38c';
+import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38c';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, wedge, gear, tree, bush, pick, D, G } = K;
 const PI = Math.PI, F = 0.05, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const F2Y = 6.4, F2H = 4.8, ROOFY = F2Y + F2H; // floor 2 base, storey height, roof deck
@@ -149,7 +149,9 @@ function roofShell(w) { // deck, glass railing, elevator kiosk, the giant rat-he
   rail(52.8, 19.8, 73.2, 19.8); rail(52.8, 40.2, 73.2, 40.2); rail(52.8, 19.8, 52.8, 40.2); rail(73.2, 19.8, 73.2, 40.2);
   // elevator kiosk (west), door on its east face
   { const x0 = 53.2, x1 = 56.2, z0 = 31.2, z1 = 34.8, h = 3.4; K.wall(w, 'x', z0, x0, x1, h, 0xfff1f8, [], { th: 0.2, trim: PINK, noBase: true }); K.wall(w, 'x', z1, x0, x1, h, 0xfff1f8, [], { th: 0.2, trim: PINK, noBase: true }); K.wall(w, 'z', x0, z0, z1, h, 0xfff1f8, [], { th: 0.2, trim: PINK, noBase: true }); K.wall(w, 'z', x1, z0, z1, h, 0xfff1f8, [D(31.9, 34.1, 3.1)], { th: 0.2, frame: 0xd1d5db, trim: PINK, noBase: true });
-    w.add('g', rbox(3.5, 0.3, 4.1, 0.1), PINK, (x0 + x1) / 2, h + 0.15, (z0 + z1) / 2); sign3d(w, 'RATITA', x1 + 0.12, h - 0.35, (z0 + z1) / 2, PI / 2, 0.22, PINK, null); w.solid(x0, 0, z0, x1 - 0.05, h, z1); }
+    w.add('g', rbox(3.5, 0.3, 4.1, 0.1), PINK, (x0 + x1) / 2, h + 0.15, (z0 + z1) / 2); sign3d(w, 'RATITA', x1 + 0.12, h - 0.35, (z0 + z1) / 2, PI / 2, 0.22, PINK, null); w.solid(x0, 0, z0, x1 - 0.05, h, z1);
+    w.add('g', rbox(0.06, 0.6, 0.26, 0.03), 0xe5e7eb, x1 + 0.14, 1.25, 34.55); w.add('l', sph(10), CHEESE, x1 + 0.18, 1.38, 34.55, 0, 0, 0, 0.05, 0.05, 0.05, 0.8); w.add('l', sph(10), TEAL, x1 + 0.18, 1.12, 34.55, 0, 0, 0, 0.05, 0.05, 0.05, 0.8);
+    w.I({ kind: 'relev', id: 'roof', x: x1 + 1.1, y: 0, z: 33, r: 1.5, label: '🛗 Call the elevator' }); }
   // the giant rat-head logo (north-east corner)
   { const lx = 69.6, ly = 0, lz = 22.6, s = 0.85; w.add('g', rcyl(2.2 * s, 0.35, 0.1, 40), CHEESE, lx, ly, lz); w.add('g', sph(28), 0xa9afbd, lx, ly + 1.9 * s, lz, 0, 0, 0, 1.5 * s, 1.4 * s, 1.2 * s); [-1, 1].forEach((k) => { w.add('g', sph(20), 0xa9afbd, lx + k * 1.25 * s, ly + 3.0 * s, lz, 0, 0, 0, 0.8 * s, 0.8 * s, 0.35 * s); w.add('g', sph(20), 0xffb3c8, lx + k * 1.25 * s, ly + 3.0 * s, lz + 0.16, 0, 0, 0, 0.62 * s, 0.62 * s, 0.3 * s); w.add('g', sph(12), 0x1b1b24, lx + k * 0.5 * s, ly + 2.15 * s, lz + 1.05 * s, 0, 0, 0, 0.16 * s); w.add('l', sph(8), 0xffffff, lx + k * 0.5 * s + 0.05, ly + 2.22 * s, lz + 1.18 * s, 0, 0, 0, 0.05, 0.05, 0.05, 0.5); });
     w.add('g', sph(14), 0xff8fb1, lx, ly + 1.75 * s, lz + 1.4 * s, 0, 0, 0, 0.25 * s, 0.2 * s, 0.2 * s); w.solid(lx - 1.9, 0, lz - 1.9, lx + 1.9, 3.6, lz + 1.9); w.lights.push({ x: lx, y: 2.4, z: lz + 3, c: 0xffd9e8, i: 8, d: 12, out: true }); }
@@ -170,7 +172,7 @@ function roofProps(w) { const I = w.I;
   for (let i = 0; i < 3; i++) { const x = 64.8 + i * 1.3; w.add('x', rcyl(0.15, 0.05, 0.02, 14), 0xd4a017, x, F, 37.6); w.add('x', cyl(8), 0xd4a017, x, F, 37.6, 0, 0, 0, 0.035, 0.9, 0.035); } w.add('f', tube([[64.8, 0.85, 37.6], [65.45, 0.6, 37.6], [66.1, 0.85, 37.6], [66.75, 0.6, 37.6], [67.4, 0.85, 37.6]], 0.035, 16, 6), PINK, 0, 0, 0);
   // telescopes over Pup Town (west edge)
   [[54.0, 37.4], [54.0, 38.9], [54.0, 27.6]].forEach(([x, z], i) => { w.add('x', rcyl(0.25, 0.08, 0.03, 16), 0x475569, x, F, z); w.add('x', cyl(10), 0x64748b, x, F, z, 0, 0, 0, 0.06, 1.05, 0.06); w.add('g', capsule(14), i === 1 ? PINK : TEAL, x - 0.15, 1.25, z, 0, 0, PI / 2 + 0.15, 0.14, 0.45, 0.14); w.add('x', rcyl(0.1, 0.06, 0.02, 14), 0x111827, x - 0.6, 1.33, z, 0, 0, PI / 2); w.solid(x - 0.25, 0, z - 0.25, x + 0.25, 1.2, z + 0.25, { cam: false });
-    I({ kind: 'f2scope', id: i, x: x + 0.9, y: F, z, r: 1.1, label: '🔭 Look through the telescope' }); });
+    I({ kind: 'rf2scope', id: i, x: x + 0.9, y: F, z, r: 1.1, label: '🔭 Look through the telescope' }); });
   // deck chairs + umbrellas, planters, picnic table
   [[58.6, 38.4, PINK], [60.6, 38.4, CHEESE]].forEach(([x, z, c]) => { const T = w.tf(x, F, z, PI); T.box('x', 0xffffff, 0, 0.25, 0, 0.6, 0.06, 1.6, 0.03); T.add('g', rbox(0.56, 0.06, 1.0, 0.03), c, 0, 0.36, 0.2); T.add('g', rbox(0.56, 0.7, 0.06, 0.03), c, 0, 0.6, -0.55, -0.55, 0, 0); [-1, 1].forEach((a) => [-1, 1].forEach((b) => T.add('x', cyl(6), 0xffffff, a * 0.25, 0, b * 0.7, 0, 0, 0, 0.02, 0.3, 0.02))); });
   { const x = 59.6, z = 37.2; w.add('x', cyl(8), 0xffffff, x, F, z, 0, 0, 0, 0.04, 2.4, 0.04); w.add('f', cone(24), TEAL, x, 2.45, z, 0, 0, 0, 1.4, 0.45, 1.4); w.add('g', sph(8), 0xffffff, x, 2.92, z, 0, 0, 0, 0.08); }

@@ -1,8 +1,8 @@
 // HUD: area name, biscuits, current objective, prompts, toasts, timers.
-import { $, esc } from './util.js';
-import { S } from './save.js';
-import { boneStep } from './story.js';
-import { rowStep, F2 } from './rowdata.js';
+import { $, esc } from './util.js?v=20261011r38c';
+import { S } from './save.js?v=20261011r38c';
+import { boneStep } from './story.js?v=20261011r38c';
+import { rowStep, F2 } from './rowdata.js?v=20261011r38c';
 export class HUD {
   constructor() { this.dirty = true; this.toasts = $('toast'); }
   region(n) { const e = $('hArea'); if (e && e.textContent !== n) { e.textContent = n; e.classList.remove('pop'); void e.offsetWidth; e.classList.add('pop'); } }
