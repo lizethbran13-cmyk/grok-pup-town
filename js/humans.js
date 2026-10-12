@@ -1,9 +1,9 @@
 // The player: a human visitor / new intern at Ratita Industries. Smooth cartoon parts (spheres, capsules, lathes),
 // vertex-coloured and batched like every other model, with a few customisation options.
 import * as THREE from 'three';
-import { P } from './geo.js?v=20261011r38g';
-import { MB, toGroup } from './models.js?v=20261011r38g';
-import { torus } from './shapes.js?v=20261011r38g';
+import { P } from './geo.js?v=20261011r38h';
+import { MB, toGroup } from './models.js?v=20261011r38h';
+import { torus } from './shapes.js?v=20261011r38h';
 const PI = Math.PI;
 export const SKINS = [0xffe0c7, 0xf5c9a4, 0xe0a87c, 0xc68658, 0x9a6440, 0x6b4128];
 export const HAIRS = ['short', 'pony', 'curly', 'bun', 'spiky', 'long'];

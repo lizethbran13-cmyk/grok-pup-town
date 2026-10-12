@@ -1,25 +1,25 @@
 // Grok Pup Town runtime: the town, players, townsfolk, the Dog-Bus, birds & ducks, day/evening, collectibles, the
 // Golden Bone mystery, fetch + agility (3D mini-games), co-op hooks.
 import * as THREE from 'three';
-import { E, setEnvironment, followShadow, skyUniforms } from './engine.js?v=20261011r38g';
-import { World } from './world.js?v=20261011r38g';
-import { buildTown, regionAt, areaName, REGIONS, DOORS } from './town.js?v=20261011r38g';
-import { Player } from './player.js?v=20261011r38g';
-import { FX } from './fx.js?v=20261011r38g';
-import { makeRat, animRat, makeMartina, animMartina, MB, toGroup } from './models.js?v=20261011r38g';
-import { makePup, animPup, makeKitten, birdGeo, makeDogBus } from './dogs.js?v=20261011r38g';
-import { MATS } from './mats.js?v=20261011r38g';
-import { P } from './geo.js?v=20261011r38g';
-import { rcyl, capsule, torus, sph, cone, heart, star } from './shapes.js?v=20261011r38g';
-import { updateFrustum, inView, LightPool } from './perf.js?v=20261011r38g';
-import { sfx, playMusic } from './audio.js?v=20261011r38g';
-import { S, persist } from './save.js?v=20261011r38g';
-import { NPCS, talk, clueText, BONE_CLUES, HATS, BADGES } from './story.js?v=20261011r38g';
-import { readMove, edge, held, IN } from './input.js?v=20261011r38g';
-import { buildRow } from './row.js?v=20261011r38g';
-import { RowPlay } from './rowplay.js?v=20261011r38g';
-import { rowUI } from './rowgames.js?v=20261011r38g';
-import { ROW_IDS, rowWants } from './rowdata.js?v=20261011r38g';
+import { E, setEnvironment, followShadow, skyUniforms } from './engine.js?v=20261011r38h';
+import { World } from './world.js?v=20261011r38h';
+import { buildTown, regionAt, areaName, REGIONS, DOORS } from './town.js?v=20261011r38h';
+import { Player } from './player.js?v=20261011r38h';
+import { FX } from './fx.js?v=20261011r38h';
+import { makeRat, animRat, makeMartina, animMartina, MB, toGroup } from './models.js?v=20261011r38h';
+import { makePup, animPup, makeKitten, birdGeo, makeDogBus } from './dogs.js?v=20261011r38h';
+import { MATS } from './mats.js?v=20261011r38h';
+import { P } from './geo.js?v=20261011r38h';
+import { rcyl, capsule, torus, sph, cone, heart, star } from './shapes.js?v=20261011r38h';
+import { updateFrustum, inView, LightPool } from './perf.js?v=20261011r38h';
+import { sfx, playMusic } from './audio.js?v=20261011r38h';
+import { S, persist } from './save.js?v=20261011r38h';
+import { NPCS, talk, clueText, BONE_CLUES, HATS, BADGES } from './story.js?v=20261011r38h';
+import { readMove, edge, held, IN } from './input.js?v=20261011r38h';
+import { buildRow } from './row.js?v=20261011r38h';
+import { RowPlay } from './rowplay.js?v=20261011r38h';
+import { rowUI } from './rowgames.js?v=20261011r38h';
+import { ROW_IDS, rowWants } from './rowdata.js?v=20261011r38h';
 const PI = Math.PI;
 const TOYS = [[18.4, 0.0, 41.6], [22.9, 0.17, -29.4], [7.5, 0.0, -44.6]];
 const DAY = 420; // seconds per day/evening cycle

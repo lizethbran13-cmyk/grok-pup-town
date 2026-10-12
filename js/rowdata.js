@@ -1,7 +1,7 @@
 // RATITA SUPER EXPANSION (DLC #38, MEGA, unlock key grokDLC.puptown.ratita_super_expansion)
 // Ratita Industries opens its Pup Town branch: Ratita Row, a whole new district east of Paw Park.
 // Data only: ownership check, the district save, employees + what they say, the mystery, the Gadget Store and achievements.
-import { S, persist } from './save.js?v=20261011r38g';
+import { S, persist } from './save.js?v=20261011r38h';
 const PI = Math.PI;
 export const DLC_KEY = 'grokDLC.puptown.ratita_super_expansion';
 export const DLC_NAME = 'Ratita Super Expansion';
@@ -73,7 +73,7 @@ export const ROW_NPCS = [
   N('zippy', 'Zippy (Delivery Pup)', { b: 'chihuahua', hat: 'cap', hatC: 0xff4fa0, neck: 'vest', neckC: 0xff4fa0 }, [56, 50.8, PI / 2], 'row', { walk: [[56, 50.8], [96, 50.8], [96, 42.2], [56, 42.2]] }),
   N('gizmo', 'Gizmo (Intern Rat)', { rat: 'brownie', hat: 'party' }, [71.4, 48.6, PI / 2], 'row'),  N('f2luna', 'Luna (Ratita CEO)', { rat: 'luna', hat: 'crown' }, [66.0, 38.4, PI * 0.8], 'r_f2', { y: 6.52 }),
   N('hazel', 'Hazel (Luna\'s Assistant)', { b: 'poodle', glasses: true, neck: 'bowtie', neckC: 0xff4fa0, tint: { fur: 0xd6a77a, light: 0xf1d2a8 } }, [58.6, 38.6, PI], 'r_f2', { y: 6.52 }),
-  N('f2pirat', 'Pi-rat (Chief Inventor)', { rat: 'pirat', hat: 'pirate', extras: ['patch'] }, [62.5, 24.7, -PI * 0.6], 'r_f2', { y: 6.52 }),
+  N('f2pirat', 'Pi-rat (Chief Inventor)', { rat: 'pirat', hat: 'pirate', extras: ['patch'] }, [57.7, 23.6, -PI * 0.75], 'r_f2', { y: 6.52 }),
   N('volt', 'Volt (Test Pilot Husky)', { b: 'husky', hat: 'helmet', hatC: 0x22d3ee, glasses: 0x22d3ee }, [56.8, 26.4, PI * 0.8], 'r_f2', { y: 6.52 }),
   N('f2torty', 'Martina "Torty" (Tortoise)', { martina: 1 }, [70.2, 22.6, PI * 0.75], 'r_f2', { y: 6.52 }),
   N('muffin', 'Muffin (Snack Fan)', { b: 'dachshund', neck: 'scarf', neckC: 0xffc93c }, [66.1, 26.4, PI], 'r_f2', { y: 6.52, mode: 'sit' }),

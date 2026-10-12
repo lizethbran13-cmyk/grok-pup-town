@@ -3,8 +3,8 @@
 // break room. Rooftop (y 11.2): Snowie's Sky Tours helipad, telescopes over Pup Town, garden, deck chairs, the rat logo.
 // Everything is authored at floor level and lifted with w.oy, so every prop helper works unchanged.
 import * as THREE from 'three';
-import * as K from './kit.js?v=20261011r38g';
-import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38g';
+import * as K from './kit.js?v=20261011r38h';
+import { gearAt, ratHead, pendant, dress, drone, bistro, cake } from './row.js?v=20261011r38h';
 const { sign3d, rbox, rcyl, lathe, sph, cyl, cone, torus, capsule, tube, star, heart, wedge, gear, tree, bush, pick, D, G } = K;
 const PI = Math.PI, F = 0.05, PINK = 0xff4fa0, CHEESE = 0xffc93c, TEAL = 0x22d3ee, NAVY = 0x1e293b, BR = [0xff5d73, 0x4f9dff, 0x3ddc84, 0xffc93c, 0xa66bff, 0x2dd4bf, 0xff8a3d, 0xff6fcf];
 export const F2Y = 6.4, F2H = 4.8, ROOFY = F2Y + F2H; // floor 2 base, storey height, roof deck
